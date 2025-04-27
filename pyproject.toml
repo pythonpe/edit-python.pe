@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-edit-python-pe = "edit_python_pe:main"
+edit-python-pe = "main:main"
 
 [build-system]
 requires = ["hatchling"]

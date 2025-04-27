@@ -341,6 +341,11 @@ class MemberFormApp(App):
         self.exit(f"Archivo {name_file}.md guardado, commit realizado y PR creado.")
 
 
+def main() -> None:
+    app = MemberFormApp()
+    app.run()
+
+
 if __name__ == "__main__":
     app = MemberFormApp()
     app.run()
