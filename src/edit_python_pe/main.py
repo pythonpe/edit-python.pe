@@ -1,27 +1,19 @@
+import getpass
+import glob
+import hashlib
 import os
 import re
-import glob
-import getpass
-import hashlib
 from datetime import datetime
 
 import pygit2
 from github import Github
-from github.Repository import Repository
 from github.GithubException import BadCredentialsException, GithubException
-
+from github.Repository import Repository
 from textual.app import App, ComposeResult
+from textual.containers import Horizontal, Vertical
 from textual.events import Event
-from textual.containers import Vertical, Horizontal
-from textual.widgets import (
-    Static,
-    Button,
-    Input,
-    TextArea,
-    Select,
-    ListView,
-    ListItem,
-)
+from textual.widgets import (Button, Input, ListItem, ListView, Select, Static,
+                             TextArea)
 
 
 class MemberApp(App):
@@ -63,7 +55,9 @@ class MemberApp(App):
         self.list_container.mount(self.list_view)
         self.list_container.mount(self.quit_list_button)
 
-        md_files = glob.glob(os.path.join(self.REPO_PATH, "blog", "members", "*.md"))
+        md_files = glob.glob(
+            os.path.join(self.REPO_PATH, "blog", "members", "*.md")
+        )
         for f in md_files:
             basename = os.path.basename(f)
             self.list_view.append(ListItem(Static(basename)))
@@ -99,7 +93,9 @@ class MemberApp(App):
         self.form_container.mount(self.name_input)
         self.form_container.mount(self.email_input)
 
-        self.form_container.mount(Static("Redes Sociales", classes="subheader"))
+        self.form_container.mount(
+            Static("Redes Sociales", classes="subheader")
+        )
         self.form_container.mount(self.social_container)
         self.form_container.mount(self.add_social_button)
 
@@ -182,9 +178,9 @@ class MemberApp(App):
             with open(path_md, "r", encoding="utf-8") as fh:
                 content = fh.read()
         except Exception as e:
-                self.exit(f"Error loading file {filename}: {e}")
-                return
-    
+            self.exit(f"Error loading file {filename}: {e}")
+            return
+
         self.clear_form()
 
         # Extract YAML frontmatter
@@ -193,6 +189,7 @@ class MemberApp(App):
         if yaml_match:
             try:
                 import yaml
+
                 yaml_data = yaml.safe_load(yaml_match.group(1))
             except Exception:
                 yaml_data = {}
@@ -210,10 +207,15 @@ class MemberApp(App):
             self.email_input.value = gravatar_match.group(1).strip()
 
         # Extract social links from raw HTML block
-        social_block = re.search(r"```\{raw\} html\n(.*?)```", content, re.DOTALL)
+        social_block = re.search(
+            r"```\{raw\} html\n(.*?)```", content, re.DOTALL
+        )
         if social_block:
             social_html = social_block.group(1)
-            social_link_pattern = re.compile(r'<a[^>]*href="([^"]+)"[^>]*>\s*<iconify-icon[^>]*icon="simple-icons:([^"]+)"', re.DOTALL)
+            social_link_pattern = re.compile(
+                r'<a[^>]*href="([^"]+)"[^>]*>\s*<iconify-icon[^>]*icon="simple-icons:([^"]+)"',
+                re.DOTALL,
+            )
             for match in social_link_pattern.finditer(social_html):
                 url = match.group(1)
                 platform = match.group(2)
@@ -237,19 +239,39 @@ class MemberApp(App):
             self.homepage_input.value = homepage_match.group(1).strip()
 
         # Extract markdown sections under headers
-        sobre_mi_match = re.search(r"## Sobre mí\n(.*?)(?=^### |\Z)", content, re.DOTALL | re.MULTILINE)
+        sobre_mi_match = re.search(
+            r"## Sobre mí\n(.*?)(?=^### |\Z)",
+            content,
+            re.DOTALL | re.MULTILINE,
+        )
         if sobre_mi_match:
             self.about_me_area.text = sobre_mi_match.group(1).strip()
-        who_match = re.search(r"### ¿Quién eres y a qué te dedicas\?\n(.*?)(?=^### |\Z)", content, re.DOTALL | re.MULTILINE)
+        who_match = re.search(
+            r"### ¿Quién eres y a qué te dedicas\?\n(.*?)(?=^### |\Z)",
+            content,
+            re.DOTALL | re.MULTILINE,
+        )
         if who_match:
             self.who_area.text = who_match.group(1).strip()
-        python_match = re.search(r"### ¿Cómo programas en Python\?\n(.*?)(?=^### |\Z)", content, re.DOTALL | re.MULTILINE)
+        python_match = re.search(
+            r"### ¿Cómo programas en Python\?\n(.*?)(?=^### |\Z)",
+            content,
+            re.DOTALL | re.MULTILINE,
+        )
         if python_match:
             self.python_area.text = python_match.group(1).strip()
-        contrib_match = re.search(r"### ¿Tienes algún aporte a la comunidad de Python\?\n(.*?)(?=^### |\Z)", content, re.DOTALL | re.MULTILINE)
+        contrib_match = re.search(
+            r"### ¿Tienes algún aporte a la comunidad de Python\?\n(.*?)(?=^### |\Z)",
+            content,
+            re.DOTALL | re.MULTILINE,
+        )
         if contrib_match:
             self.contributions_area.text = contrib_match.group(1).strip()
-        avail_match = re.search(r"### ¿Estás disponible para hacer mentoring, consultorías, charlas\?\n(.*?)(?=^### |\Z)", content, re.DOTALL | re.MULTILINE)
+        avail_match = re.search(
+            r"### ¿Estás disponible para hacer mentoring, consultorías, charlas\?\n(.*?)(?=^### |\Z)",
+            content,
+            re.DOTALL | re.MULTILINE,
+        )
         if avail_match:
             self.availability_area.text = avail_match.group(1).strip()
 
@@ -377,7 +399,9 @@ class MemberApp(App):
             alias_for_name = name.lower().replace(" ", "_")
 
         sha_hash = hashlib.sha1(
-            (alias_for_name + email + datetime.now().isoformat()).encode("utf-8")
+            (alias_for_name + email + datetime.now().isoformat()).encode(
+                "utf-8"
+            )
         ).hexdigest()[:8]
         name_file = f"{alias_for_name}-{sha_hash}"
 
@@ -410,8 +434,12 @@ class MemberApp(App):
             md_lines.append('<ul class="social-media profile">')
             for plat, url in socials:
                 md_lines.append("    <li>")
-                md_lines.append(f'        <a class="external reference" href="{url}">')
-                md_lines.append(f'            <iconify-icon icon="simple-icons:{plat}" style="font-size:2em"></iconify-icon>')
+                md_lines.append(
+                    f'        <a class="external reference" href="{url}">'
+                )
+                md_lines.append(
+                    f'            <iconify-icon icon="simple-icons:{plat}" style="font-size:2em"></iconify-icon>'
+                )
                 md_lines.append("        </a>")
                 md_lines.append("    </li>")
             md_lines.append("</ul>")
@@ -449,13 +477,17 @@ class MemberApp(App):
             md_lines.append("")
 
         if contributions:
-            md_lines.append("### ¿Tienes algún aporte a la comunidad de Python?")
+            md_lines.append(
+                "### ¿Tienes algún aporte a la comunidad de Python?"
+            )
             md_lines.append("")
             md_lines.append(contributions)
             md_lines.append("")
 
         if availability:
-            md_lines.append("### ¿Estás disponible para hacer mentoring, consultorías, charlas?")
+            md_lines.append(
+                "### ¿Estás disponible para hacer mentoring, consultorías, charlas?"
+            )
             md_lines.append("")
             md_lines.append(availability)
             md_lines.append("")
@@ -463,7 +495,9 @@ class MemberApp(App):
         md_content = "\n".join(md_lines)
 
         # Write file
-        file_path = os.path.join(self.REPO_PATH, "blog", "members", f"{name_file}.md")
+        file_path = os.path.join(
+            self.REPO_PATH, "blog", "members", f"{name_file}.md"
+        )
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(md_content)
@@ -473,11 +507,15 @@ class MemberApp(App):
         rel_path = os.path.relpath(file_path, self.REPO_PATH)
         repo.index.add(rel_path)
         repo.index.write()
-        author_sig = pygit2.Signature(name or "Unknown", email or "unknown@email")
+        author_sig = pygit2.Signature(
+            name or "Unknown", email or "unknown@email"
+        )
         tree_id = repo.index.write_tree()
         parents = [] if repo.head_is_unborn else [repo.head.target]
         commit_msg = f"Added {name_file}.md"
-        repo.create_commit("HEAD", author_sig, author_sig, commit_msg, tree_id, parents)
+        repo.create_commit(
+            "HEAD", author_sig, author_sig, commit_msg, tree_id, parents
+        )
 
         callbacks = pygit2.callbacks.RemoteCallbacks(
             credentials=pygit2.UserPass(self.token, "x-oauth-basic")
@@ -518,7 +556,9 @@ def get_repo() -> tuple[str, Repository]:
         print("Acceso no autorizado. Por favor, verifique su token de acceso.")
         exit(1)
     except GithubException:
-        print("Repositorio no encontrado. Por favor, verifique su token de acceso.")
+        print(
+            "Repositorio no encontrado. Por favor, verifique su token de acceso."
+        )
         exit(1)
 
 
