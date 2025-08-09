@@ -30,6 +30,7 @@ path = "src/edit_python_pe/__about__.py"
 dev = [
     "black>=25.1.0",
     "isort>=6.0.1",
+    "pytest>=8.4.1",
 ]
 
 [tool.black]
