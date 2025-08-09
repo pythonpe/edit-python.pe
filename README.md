@@ -3,7 +3,7 @@
 To run this tool, just type:
 
 ```sh
-uvx --from git+https://github.com/pythonpe/edit-python.pe edit-python-pe
+uvx edit-python-pe
 ```
 
 After that, a text user interface would appear that allows you to create your
