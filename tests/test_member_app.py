@@ -109,6 +109,7 @@ class TestMemberApp(unittest.TestCase):
     def test_save_member_edit_no_pr(self):
         """Test editing an existing member without a matching PR in save_member."""
         from unittest.mock import MagicMock, patch
+
         app = self.app
         app.REPO_PATH = "/tmp/testrepo"
         app.current_file = "existing_member.md"
@@ -119,9 +120,11 @@ class TestMemberApp(unittest.TestCase):
         app.original_repo.create_pull = MagicMock()
         # Mock PR list with no matching PR
         app.original_repo.get_pulls = MagicMock(return_value=[])
-        with patch("os.makedirs") as makedirs, \
-             patch("builtins.open", MagicMock()), \
-             patch("pygit2.Repository") as RepoMock:
+        with (
+            patch("os.makedirs") as makedirs,
+            patch("builtins.open", MagicMock()),
+            patch("pygit2.Repository") as RepoMock,
+        ):
             repo_instance = RepoMock.return_value
             repo_instance.index.add = MagicMock()
             repo_instance.index.write = MagicMock()
@@ -162,6 +165,7 @@ class TestMemberApp(unittest.TestCase):
     def test_save_member_edit(self):
         """Test editing an existing member with a matching PR in save_member."""
         from unittest.mock import MagicMock, patch
+
         app = self.app
         app.REPO_PATH = "/tmp/testrepo"
         app.current_file = "existing_member.md"
@@ -175,9 +179,11 @@ class TestMemberApp(unittest.TestCase):
         mock_pr.title = "Update member profile"
         mock_pr.state = "open"
         app.original_repo.get_pulls = MagicMock(return_value=[mock_pr])
-        with patch("os.makedirs") as makedirs, \
-             patch("builtins.open", MagicMock()), \
-             patch("pygit2.Repository") as RepoMock:
+        with (
+            patch("os.makedirs") as makedirs,
+            patch("builtins.open", MagicMock()),
+            patch("pygit2.Repository") as RepoMock,
+        ):
             repo_instance = RepoMock.return_value
             repo_instance.index.add = MagicMock()
             repo_instance.index.write = MagicMock()
@@ -222,6 +228,7 @@ class TestMemberApp(unittest.TestCase):
         """Test creating a new member scenario in save_member."""
         import builtins
         from unittest.mock import MagicMock, patch
+
         app = self.app
         app.REPO_PATH = "/tmp/testrepo"
         app.current_file = None
@@ -230,9 +237,11 @@ class TestMemberApp(unittest.TestCase):
         app.original_repo = MagicMock()
         app.original_repo.owner.login = "testowner"
         app.original_repo.create_pull = MagicMock()
-        with patch("os.makedirs") as makedirs, \
-             patch("builtins.open", MagicMock()), \
-             patch("pygit2.Repository") as RepoMock:
+        with (
+            patch("os.makedirs") as makedirs,
+            patch("builtins.open", MagicMock()),
+            patch("pygit2.Repository") as RepoMock,
+        ):
             repo_instance = RepoMock.return_value
             repo_instance.index.add = MagicMock()
             repo_instance.index.write = MagicMock()
@@ -270,7 +279,8 @@ class TestMemberApp(unittest.TestCase):
 
     def test_save_member_error_handling(self):
         """Test error handling in save_member when required fields are missing."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         app = self.app
         app.REPO_PATH = "/tmp/testrepo"
         app.current_file = None
@@ -280,10 +290,12 @@ class TestMemberApp(unittest.TestCase):
         app.original_repo.owner.login = "testowner"
         app.original_repo.create_pull = MagicMock()
         # Patch exit to capture error message
-        with patch.object(app, "exit") as exit_mock, \
-             patch("os.makedirs"), \
-             patch("builtins.open", MagicMock()), \
-             patch("pygit2.Repository"):
+        with (
+            patch.object(app, "exit") as exit_mock,
+            patch("os.makedirs"),
+            patch("builtins.open", MagicMock()),
+            patch("pygit2.Repository"),
+        ):
             # Leave name and email blank to trigger error
             app.name_input.value = ""
             app.email_input.value = ""
