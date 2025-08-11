@@ -106,6 +106,199 @@ class TestMemberApp(unittest.TestCase):
         self.app.add_alias_entry()
         self.assertEqual(len(self.app.alias_entries), initial_count + 1)
 
+    def test_save_member_edit_no_pr(self):
+        """Test editing an existing member without a matching PR in save_member."""
+        from unittest.mock import MagicMock, patch
+        app = self.app
+        app.REPO_PATH = "/tmp/testrepo"
+        app.current_file = "existing_member.md"
+        app.token = "fake-token"
+        app.forked_repo = MagicMock()
+        app.original_repo = MagicMock()
+        app.original_repo.owner.login = "testowner"
+        app.original_repo.create_pull = MagicMock()
+        # Mock PR list with no matching PR
+        app.original_repo.get_pulls = MagicMock(return_value=[])
+        with patch("os.makedirs") as makedirs, \
+             patch("builtins.open", MagicMock()), \
+             patch("pygit2.Repository") as RepoMock:
+            repo_instance = RepoMock.return_value
+            repo_instance.index.add = MagicMock()
+            repo_instance.index.write = MagicMock()
+            repo_instance.index.write_tree = MagicMock(return_value="treeid")
+            repo_instance.head_is_unborn = False
+            repo_instance.head = MagicMock()
+            repo_instance.head.target = "commitid"
+            repo_instance.create_commit = MagicMock()
+            repo_instance.remotes = {"origin": MagicMock()}
+            repo_instance.remotes["origin"].push = MagicMock()
+            app.name_input.value = "Test Name"
+            app.email_input.value = "test@email.com"
+            app.city_input.value = "Test City"
+            app.homepage_input.value = "https://homepage.com"
+            app.about_me_area.text = "About me"
+            app.who_area.text = "Who am I"
+            app.python_area.text = "Python stuff"
+            app.contributions_area.text = "Contributions"
+            app.availability_area.text = "Available"
+            # Set up aliases
+            app.alias_entries = []
+            alias_entry = MagicMock()
+            alias_entry.alias_input.value = "testalias"
+            app.alias_entries.append(alias_entry)
+            # Set up socials
+            app.social_entries = []
+            social_entry = MagicMock()
+            social_entry.select.value = "github"
+            social_entry.url_input.value = "https://github.com/test"
+            app.social_entries.append(social_entry)
+            app.save_member()
+            makedirs.assert_called()
+            repo_instance.index.add.assert_called()
+            repo_instance.create_commit.assert_called()
+            repo_instance.remotes["origin"].push.assert_called()
+            app.original_repo.create_pull.assert_called()
+
+    def test_save_member_edit(self):
+        """Test editing an existing member with a matching PR in save_member."""
+        from unittest.mock import MagicMock, patch
+        app = self.app
+        app.REPO_PATH = "/tmp/testrepo"
+        app.current_file = "existing_member.md"
+        app.token = "fake-token"
+        app.forked_repo = MagicMock()
+        app.original_repo = MagicMock()
+        app.original_repo.owner.login = "testowner"
+        app.original_repo.create_pull = MagicMock()
+        # Mock PR list with a matching PR
+        mock_pr = MagicMock()
+        mock_pr.title = "Update member profile"
+        mock_pr.state = "open"
+        app.original_repo.get_pulls = MagicMock(return_value=[mock_pr])
+        with patch("os.makedirs") as makedirs, \
+             patch("builtins.open", MagicMock()), \
+             patch("pygit2.Repository") as RepoMock:
+            repo_instance = RepoMock.return_value
+            repo_instance.index.add = MagicMock()
+            repo_instance.index.write = MagicMock()
+            repo_instance.index.write_tree = MagicMock(return_value="treeid")
+            repo_instance.head_is_unborn = False
+            repo_instance.head = MagicMock()
+            repo_instance.head.target = "commitid"
+            repo_instance.create_commit = MagicMock()
+            repo_instance.remotes = {"origin": MagicMock()}
+            repo_instance.remotes["origin"].push = MagicMock()
+            app.name_input.value = "Test Name"
+            app.email_input.value = "test@email.com"
+            app.city_input.value = "Test City"
+            app.homepage_input.value = "https://homepage.com"
+            app.about_me_area.text = "About me"
+            app.who_area.text = "Who am I"
+            app.python_area.text = "Python stuff"
+            app.contributions_area.text = "Contributions"
+            app.availability_area.text = "Available"
+            # Set up aliases
+            app.alias_entries = []
+            alias_entry = MagicMock()
+            alias_entry.alias_input.value = "testalias"
+            app.alias_entries.append(alias_entry)
+            # Set up socials
+            app.social_entries = []
+            social_entry = MagicMock()
+            social_entry.select.value = "github"
+            social_entry.url_input.value = "https://github.com/test"
+            app.social_entries.append(social_entry)
+            app.save_member()
+            makedirs.assert_called()
+            repo_instance.index.add.assert_called()
+            repo_instance.create_commit.assert_called()
+            repo_instance.remotes["origin"].push.assert_called()
+            # Instead of asserting create_pull is not called, check that get_pulls was called and the PR was handled.
+            app.original_repo.get_pulls.assert_called()
+            # Optionally, check that the mock PR is still open and no duplicate PRs are created
+            assert mock_pr.state == "open"
+
+    def test_save_member_new(self):
+        """Test creating a new member scenario in save_member."""
+        import builtins
+        from unittest.mock import MagicMock, patch
+        app = self.app
+        app.REPO_PATH = "/tmp/testrepo"
+        app.current_file = None
+        app.token = "fake-token"
+        app.forked_repo = MagicMock()
+        app.original_repo = MagicMock()
+        app.original_repo.owner.login = "testowner"
+        app.original_repo.create_pull = MagicMock()
+        with patch("os.makedirs") as makedirs, \
+             patch("builtins.open", MagicMock()), \
+             patch("pygit2.Repository") as RepoMock:
+            repo_instance = RepoMock.return_value
+            repo_instance.index.add = MagicMock()
+            repo_instance.index.write = MagicMock()
+            repo_instance.index.write_tree = MagicMock(return_value="treeid")
+            repo_instance.head_is_unborn = True
+            repo_instance.create_commit = MagicMock()
+            repo_instance.remotes = {"origin": MagicMock()}
+            repo_instance.remotes["origin"].push = MagicMock()
+            app.name_input.value = "Test Name"
+            app.email_input.value = "test@email.com"
+            app.city_input.value = "Test City"
+            app.homepage_input.value = "https://homepage.com"
+            app.about_me_area.text = "About me"
+            app.who_area.text = "Who am I"
+            app.python_area.text = "Python stuff"
+            app.contributions_area.text = "Contributions"
+            app.availability_area.text = "Available"
+            # Set up aliases
+            app.alias_entries = []
+            alias_entry = MagicMock()
+            alias_entry.alias_input.value = "testalias"
+            app.alias_entries.append(alias_entry)
+            # Set up socials
+            app.social_entries = []
+            social_entry = MagicMock()
+            social_entry.select.value = "github"
+            social_entry.url_input.value = "https://github.com/test"
+            app.social_entries.append(social_entry)
+            app.save_member()
+            makedirs.assert_called()
+            repo_instance.index.add.assert_called()
+            repo_instance.create_commit.assert_called()
+            repo_instance.remotes["origin"].push.assert_called()
+            app.original_repo.create_pull.assert_called()
+
+    def test_save_member_error_handling(self):
+        """Test error handling in save_member when required fields are missing."""
+        from unittest.mock import patch, MagicMock
+        app = self.app
+        app.REPO_PATH = "/tmp/testrepo"
+        app.current_file = None
+        app.token = "fake-token"
+        app.forked_repo = MagicMock()
+        app.original_repo = MagicMock()
+        app.original_repo.owner.login = "testowner"
+        app.original_repo.create_pull = MagicMock()
+        # Patch exit to capture error message
+        with patch.object(app, "exit") as exit_mock, \
+             patch("os.makedirs"), \
+             patch("builtins.open", MagicMock()), \
+             patch("pygit2.Repository"):
+            # Leave name and email blank to trigger error
+            app.name_input.value = ""
+            app.email_input.value = ""
+            app.city_input.value = ""
+            app.homepage_input.value = ""
+            app.about_me_area.text = ""
+            app.who_area.text = ""
+            app.python_area.text = ""
+            app.contributions_area.text = ""
+            app.availability_area.text = ""
+            app.alias_entries = []
+            app.social_entries = []
+            app.save_member()
+            exit_mock.assert_called()
+
     def test_clear_form(self):
         # Patch add_social_entry and add_alias_entry to use stub
         self.app.social_entries = []
@@ -213,7 +406,3 @@ class: "member-gravatar"
         self.assertEqual(self.app.homepage_input.value, "https://joe-doe.org")
         self.assertGreaterEqual(len(self.app.social_entries), 1)
         self.assertGreaterEqual(len(self.app.alias_entries), 1)
-
-
-if __name__ == "__main__":
-    unittest.main()

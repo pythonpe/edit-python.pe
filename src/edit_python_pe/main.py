@@ -4,11 +4,13 @@ import hashlib
 import os
 import re
 from datetime import datetime
+from time import sleep
 
 import pygit2
 from github import Github
 from github.GithubException import BadCredentialsException, GithubException
 from github.Repository import Repository
+from platformdirs import user_data_dir
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.events import Event
@@ -33,15 +35,18 @@ class MemberApp(App):
         yield self.form_container
 
     def on_mount(self) -> None:
-        """Perform setup: ask for token, do fork if needed, set up UI."""
+        """Perform setup: do fork if needed, set up UI."""
         self.forked_repo = self.original_repo.create_fork()
         self.FORKED_REPO_URL = self.forked_repo.clone_url
-        self.REPO_PATH = "python.pe"
+        self.REPO_PATH = user_data_dir(
+            appname="edit-python-pe", appauthor="python.pe"
+        )
 
         if not os.path.exists(self.REPO_PATH):
             callbacks = pygit2.callbacks.RemoteCallbacks(
                 credentials=pygit2.UserPass(self.token, "x-oauth-basic")
             )
+            sleep(3)
             pygit2.clone_repository(
                 self.FORKED_REPO_URL, self.REPO_PATH, callbacks=callbacks
             )
@@ -392,19 +397,6 @@ class MemberApp(App):
             if plat and urlval:
                 socials.append((plat, urlval))
 
-        # compute name_file
-        if aliases:
-            alias_for_name = aliases[0].lower().replace(" ", "_")
-        else:
-            alias_for_name = name.lower().replace(" ", "_")
-
-        sha_hash = hashlib.sha1(
-            (alias_for_name + email + datetime.now().isoformat()).encode(
-                "utf-8"
-            )
-        ).hexdigest()[:8]
-        name_file = f"{alias_for_name}-{sha_hash}"
-
         # Build the markdown doc as per the provided guide
         md_lines = [
             "---",
@@ -494,10 +486,29 @@ class MemberApp(App):
 
         md_content = "\n".join(md_lines)
 
-        # Write file
-        file_path = os.path.join(
-            self.REPO_PATH, "blog", "members", f"{name_file}.md"
-        )
+        if not self.current_file:
+            # compute name_file
+            if aliases:
+                alias_for_name = aliases[0].lower().replace(" ", "_")
+            else:
+                alias_for_name = name.lower().replace(" ", "_")
+
+            sha_hash = hashlib.sha1(
+                (alias_for_name + email + datetime.now().isoformat()).encode(
+                    "utf-8"
+                )
+            ).hexdigest()[:8]
+            name_file = f"{alias_for_name}-{sha_hash}"
+
+            # Write file
+            file_path = os.path.join(
+                self.REPO_PATH, "blog", "members", f"{name_file}.md"
+            )
+        else:
+            name_file = self.current_file
+            file_path = os.path.join(
+                self.REPO_PATH, "blog", "members", f"{name_file}"
+            )
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(md_content)
@@ -512,7 +523,11 @@ class MemberApp(App):
         )
         tree_id = repo.index.write_tree()
         parents = [] if repo.head_is_unborn else [repo.head.target]
-        commit_msg = f"Added {name_file}.md"
+        commit_msg = (
+            f"Changed {self.current_file}"
+            if self.current_file
+            else f"Added {name_file}.md"
+        )
         repo.create_commit(
             "HEAD", author_sig, author_sig, commit_msg, tree_id, parents
         )
@@ -523,18 +538,57 @@ class MemberApp(App):
         remote = repo.remotes["origin"]
         remote.push([repo.head.name], callbacks=callbacks)
 
-        # create PR
+        # PR logic
         pr_title = commit_msg
         first_alias = aliases[0] if aliases else ""
-        pr_body = f"Creating a new entry to `blog/membbers` for {name} (alias: {first_alias})."
+        pr_body = (
+            f"Changing an entry to `blog/members` for {name} (alias: {first_alias})."
+            if self.current_file
+            else f"Creating a new entry to `blog/members` for {name} (alias: {first_alias})."
+        )
         fork_owner = self.forked_repo.owner.login
         head_branch = f"{fork_owner}:main"
         base_branch = "main"
-        self.original_repo.create_pull(
-            title=pr_title, body=pr_body, head=head_branch, base=base_branch
-        )
 
-        self.exit(f"Archivo {name_file}.md guardado, commit y PR listo.")
+        # If editing, retrieve PR by title and push to its branch
+        if self.current_file:
+            # Try to find an open PR with matching title
+            prs = self.original_repo.get_pulls(
+                state="open", sort="created", base=base_branch
+            )
+            pr_found = None
+            for pr in prs:
+                if self.current_file in pr.title:
+                    pr_found = pr
+                    break
+            if pr_found:
+                # Push to the PR branch (simulate, as actual branch logic may differ)
+                remote.push([repo.head.name], callbacks=callbacks)
+                self.exit(
+                    message=f"Archivo {self.current_file} editado, commit y cambios enviados al PR existente."
+                )
+            else:
+                # Otherwise, create a new PR
+                self.original_repo.create_pull(
+                    title=pr_title,
+                    body=pr_body,
+                    head=head_branch,
+                    base=base_branch,
+                )
+                self.exit(
+                    message=f"Archivo {self.current_file} guardado, commit y PR listo."
+                )
+        else:
+            # Otherwise, create a new PR
+            self.original_repo.create_pull(
+                title=pr_title,
+                body=pr_body,
+                head=head_branch,
+                base=base_branch,
+            )
+            self.exit(
+                message=f"Archivo {name_file}.md guardado, commit y PR listo."
+            )
 
     async def on_event(self, event: Event) -> None:
         # catch listview selection
