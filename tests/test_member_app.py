@@ -19,6 +19,8 @@ class TestMemberApp(unittest.TestCase):
         self.app = MemberApp(token=self.token, original_repo=self.repo)
         self.app.social_container = MagicMock()
         self.app.alias_container = MagicMock()
+        self.app.list_container = MagicMock()
+        self.app.form_container = MagicMock()
         # Manually initialize attributes normally set in on_mount
         self.app.social_entries = []
         self.app.alias_entries = []
@@ -86,6 +88,41 @@ class TestMemberApp(unittest.TestCase):
         initial_count = len(self.app.social_entries)
         self.app.add_social_entry()
         self.assertEqual(len(self.app.social_entries), initial_count + 1)
+
+    def test_add_list_button_clears_form(self):
+        """Test that clicking the 'Añadir' button on the list screen clears the form and prepares for a new entry."""
+        # Fill form fields
+        self.app.name_input.value = "Filled Name"
+        self.app.email_input.value = "filled@email.com"
+        self.app.city_input.value = "Filled City"
+        self.app.homepage_input.value = "https://filled-homepage.com"
+        self.app.about_me_area.text = "Filled About me"
+        self.app.who_area.text = "Filled Who am I"
+        self.app.python_area.text = "Filled Python stuff"
+        self.app.contributions_area.text = "Filled Contributions"
+        self.app.availability_area.text = "Filled Available"
+        # Add social and alias entries
+        self.app.social_entries = [self.StubSocialEntry()]
+        self.app.alias_entries = [self.StubAliasEntry()]
+        # Simulate pressing the 'Añadir' button on the list screen
+        class DummyButton:
+            id = "add_list"
+        class DummyEvent:
+            button = DummyButton()
+        self.app.on_button_pressed(DummyEvent())
+        # After pressing, form should be cleared and current_file should be None
+        self.assertEqual(self.app.name_input.value, "")
+        self.assertEqual(self.app.email_input.value, "")
+        self.assertEqual(self.app.city_input.value, "")
+        self.assertEqual(self.app.homepage_input.value, "")
+        self.assertEqual(self.app.about_me_area.text, "Sobre mí")
+        self.assertEqual(self.app.who_area.text, "¿Quién eres y a qué te dedicas?")
+        self.assertEqual(self.app.python_area.text, "¿Cómo programas en Python?")
+        self.assertEqual(self.app.contributions_area.text, "¿Tienes algún aporte a la comunidad de Python?")
+        self.assertEqual(self.app.availability_area.text, "¿Estás disponible para hacer mentoring, consultorías, charlas?")
+        self.assertEqual(len(self.app.social_entries), 0)
+        self.assertEqual(len(self.app.alias_entries), 0)
+        self.assertIsNone(self.app.current_file)
 
     def test_add_alias_entry(self):
         # Patch add_alias_entry to use stub

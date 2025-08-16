@@ -57,7 +57,9 @@ class MemberApp(App):
         self.quit_list_button = Button("Salir", id="quit_list")
 
         self.list_container.mount(self.list_title)
+        self.add_list_button = Button("Añadir", id="add_list")
         self.list_container.mount(self.list_view)
+        self.list_container.mount(self.add_list_button)
         self.list_container.mount(self.quit_list_button)
 
         md_files = glob.glob(
@@ -147,11 +149,11 @@ class MemberApp(App):
         self.email_input.value = ""
         self.city_input.value = ""
         self.homepage_input.value = ""
-        self.about_me_area.text = ""
-        self.who_area.text = ""
-        self.python_area.text = ""
-        self.contributions_area.text = ""
-        self.availability_area.text = ""
+        self.about_me_area.text = "Sobre mí"
+        self.who_area.text = "¿Quién eres y a qué te dedicas?"
+        self.python_area.text = "¿Cómo programas en Python?"
+        self.contributions_area.text = "¿Tienes algún aporte a la comunidad de Python?"
+        self.availability_area.text = "¿Estás disponible para hacer mentoring, consultorías, charlas?"
 
         for soc in self.social_entries:
             soc.remove()
@@ -288,6 +290,10 @@ class MemberApp(App):
             self.add_social_entry()
         elif bid == "add_alias":
             self.add_alias_entry()
+        elif bid == "add_list":
+            self.clear_form()
+            self.current_file = None
+            self.show_form()
         elif bid == "save":
             self.save_member()
         elif bid == "back":
