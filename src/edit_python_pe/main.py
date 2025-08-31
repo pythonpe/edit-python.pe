@@ -5,7 +5,7 @@ import os
 import re
 from datetime import datetime
 from time import sleep
-
+import pathlib
 import pygit2
 from github import Github
 from github.GithubException import BadCredentialsException, GithubException
@@ -522,6 +522,7 @@ class MemberApp(App):
         # commit & push
         repo = pygit2.Repository(self.REPO_PATH)
         rel_path = os.path.relpath(file_path, self.REPO_PATH)
+        rel_path = pathlib.Path(rel_path).as_posix() # Force path to POSIX format so Windows backslashes (\) don't break pygit2
         repo.index.add(rel_path)
         repo.index.write()
         author_sig = pygit2.Signature(
