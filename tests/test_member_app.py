@@ -8,7 +8,7 @@ import pytest
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
 )
-from edit_python_pe.main import MemberApp
+from edit_python_pe.main import MemberApp, fork_repo, get_repo, main
 
 
 class TestMemberApp(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestMemberApp(unittest.TestCase):
         self.app.social_index = 0
         self.app.alias_index = 0
 
-        # Mock UI elements and REPO_PATH
+        # Mock UI elements
         # Use simple stub classes for input widgets and text areas
         class StubInput:
             def __init__(self):
@@ -45,7 +45,6 @@ class TestMemberApp(unittest.TestCase):
         self.app.python_area = StubTextArea()
         self.app.contributions_area = StubTextArea()
         self.app.availability_area = StubTextArea()
-        self.app.REPO_PATH = "test_repo"
 
         # Patch remove method for entries to avoid Textual lifecycle errors
         # Use stub classes for entries with .remove() method
@@ -116,19 +115,15 @@ class TestMemberApp(unittest.TestCase):
         self.assertEqual(self.app.email_input.value, "")
         self.assertEqual(self.app.city_input.value, "")
         self.assertEqual(self.app.homepage_input.value, "")
-        self.assertEqual(
-            self.app.who_area.text, "¿Quién eres y a qué te dedicas?"
-        )
-        self.assertEqual(
-            self.app.python_area.text, "¿Cómo programas en Python?"
-        )
+        self.assertEqual(self.app.who_area.text, "")
+        self.assertEqual(self.app.python_area.text, "")
         self.assertEqual(
             self.app.contributions_area.text,
-            "¿Tienes algún aporte a la comunidad de Python?",
+            "",
         )
         self.assertEqual(
             self.app.availability_area.text,
-            "¿Estás disponible para hacer mentoring, consultorías, charlas?",
+            "",
         )
         self.assertEqual(len(self.app.social_entries), 0)
         self.assertEqual(len(self.app.alias_entries), 0)
@@ -158,7 +153,6 @@ class TestMemberApp(unittest.TestCase):
         from unittest.mock import MagicMock, patch
 
         app = self.app
-        app.REPO_PATH = "/tmp/testrepo"
         app.current_file = "existing_member.md"
         app.token = "fake-token"
         app.forked_repo = MagicMock()
@@ -213,7 +207,6 @@ class TestMemberApp(unittest.TestCase):
         from unittest.mock import MagicMock, patch
 
         app = self.app
-        app.REPO_PATH = "/tmp/testrepo"
         app.current_file = "existing_member.md"
         app.token = "fake-token"
         app.forked_repo = MagicMock()
@@ -275,7 +268,6 @@ class TestMemberApp(unittest.TestCase):
         from unittest.mock import MagicMock, patch
 
         app = self.app
-        app.REPO_PATH = "/tmp/testrepo"
         app.current_file = None
         app.token = "fake-token"
         app.forked_repo = MagicMock()
@@ -326,7 +318,6 @@ class TestMemberApp(unittest.TestCase):
         from unittest.mock import MagicMock, patch
 
         app = self.app
-        app.REPO_PATH = "/tmp/testrepo"
         app.current_file = None
         app.token = "fake-token"
         app.forked_repo = MagicMock()
@@ -462,12 +453,6 @@ class: "member-gravatar"
         self.assertGreaterEqual(len(self.app.social_entries), 1)
 
 
-# Test for get_repo function
-import builtins
-
-from edit_python_pe.main import get_repo
-
-
 class TestGetRepo(unittest.TestCase):
     @patch("edit_python_pe.main.getpass.getpass", return_value="valid-token")
     @patch("edit_python_pe.main.Github")
@@ -501,9 +486,6 @@ class TestGetRepo(unittest.TestCase):
             get_repo()
 
 
-from edit_python_pe.main import fork_repo
-
-
 class TestForkRepo(unittest.TestCase):
     @patch("edit_python_pe.main.user_data_dir", return_value="/tmp/testrepo")
     @patch("edit_python_pe.main.os.path.exists", return_value=False)
@@ -531,9 +513,6 @@ class TestForkRepo(unittest.TestCase):
         self, mock_clone, mock_exists, mock_user_data_dir
     ):
         mock_forked_repo = MagicMock()
-
-
-from edit_python_pe.main import main
 
 
 class TestMainFunction(unittest.TestCase):

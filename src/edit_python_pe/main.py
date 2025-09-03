@@ -60,14 +60,10 @@ class MemberApp(App):
         self.city_input = Input(placeholder="Ciudad")
         self.homepage_input = Input(placeholder="Página personal")
 
-        self.who_area = TextArea(text="¿Quién eres y a qué te dedicas?")
-        self.python_area = TextArea(text="¿Cómo programas en Python?")
-        self.contributions_area = TextArea(
-            text="¿Tienes algún aporte a la comunidad de Python?"
-        )
-        self.availability_area = TextArea(
-            text="¿Estás disponible para hacer mentoring, consultorías, charlas?"
-        )
+        self.who_area = TextArea()
+        self.python_area = TextArea()
+        self.contributions_area = TextArea()
+        self.availability_area = TextArea()
 
         self.social_container = Vertical()
         self.alias_container = Vertical()
@@ -95,9 +91,27 @@ class MemberApp(App):
 
         self.form_container.mount(self.city_input)
         self.form_container.mount(self.homepage_input)
+        self.form_container.mount(
+            Static("¿Quién eres y a qué te dedicas?", classes="subheader")
+        )
         self.form_container.mount(self.who_area)
+        self.form_container.mount(
+            Static("¿Cómo programas en Python?", classes="subheader")
+        )
         self.form_container.mount(self.python_area)
+        self.form_container.mount(
+            Static(
+                "¿Tienes algún aporte a la comunidad de Python?",
+                classes="subheader",
+            )
+        )
         self.form_container.mount(self.contributions_area)
+        self.form_container.mount(
+            Static(
+                "¿Estás disponible para hacer mentoring, consultorías, charlas?",
+                classes="subheader",
+            )
+        )
         self.form_container.mount(self.availability_area)
 
         self.form_button_bar = Horizontal(
@@ -131,14 +145,10 @@ class MemberApp(App):
         self.email_input.value = ""
         self.city_input.value = ""
         self.homepage_input.value = ""
-        self.who_area.text = "¿Quién eres y a qué te dedicas?"
-        self.python_area.text = "¿Cómo programas en Python?"
-        self.contributions_area.text = (
-            "¿Tienes algún aporte a la comunidad de Python?"
-        )
-        self.availability_area.text = (
-            "¿Estás disponible para hacer mentoring, consultorías, charlas?"
-        )
+        self.who_area.text = ""
+        self.python_area.text = ""
+        self.contributions_area.text = ""
+        self.availability_area.text = ""
 
         for soc in self.social_entries:
             soc.remove()
