@@ -16,7 +16,14 @@ class TestMemberApp(unittest.TestCase):
         # Patch Github and Repository for testing
         self.token = "fake-token"
         self.repo = MagicMock()
-        self.app = MemberApp(repo_path="test_repo")
+        self.original_repo = MagicMock()
+        self.forked_repo = MagicMock()
+        self.app = MemberApp(
+            repo_path="test_repo",
+            original_repo=self.original_repo,
+            forked_repo=self.forked_repo,
+            token=self.token,
+        )
         self.app.social_container = MagicMock()
         self.app.alias_container = MagicMock()
         self.app.list_container = MagicMock()
@@ -164,7 +171,7 @@ class TestMemberApp(unittest.TestCase):
         with (
             patch("os.makedirs") as makedirs,
             patch("builtins.open", MagicMock()),
-            patch("pygit2.Repository") as RepoMock,
+            patch("pygit2.repository.Repository") as RepoMock,
         ):
             repo_instance = RepoMock.return_value
             repo_instance.index.add = MagicMock()
@@ -221,7 +228,7 @@ class TestMemberApp(unittest.TestCase):
         with (
             patch("os.makedirs") as makedirs,
             patch("builtins.open", MagicMock()),
-            patch("pygit2.Repository") as RepoMock,
+            patch("pygit2.repository.Repository") as RepoMock,
         ):
             repo_instance = RepoMock.return_value
             repo_instance.index.add = MagicMock()
@@ -277,7 +284,7 @@ class TestMemberApp(unittest.TestCase):
         with (
             patch("os.makedirs") as makedirs,
             patch("builtins.open", MagicMock()),
-            patch("pygit2.Repository") as RepoMock,
+            patch("pygit2.repository.Repository") as RepoMock,
         ):
             repo_instance = RepoMock.return_value
             repo_instance.index.add = MagicMock()
@@ -329,7 +336,7 @@ class TestMemberApp(unittest.TestCase):
             patch.object(app, "exit") as exit_mock,
             patch("os.makedirs"),
             patch("builtins.open", MagicMock()),
-            patch("pygit2.Repository"),
+            patch("pygit2.repository.Repository"),
         ):
             # Leave name and email blank to trigger error
             app.name_input.value = ""
@@ -499,11 +506,12 @@ class TestForkRepo(unittest.TestCase):
         mock_original_repo = MagicMock()
         mock_original_repo.create_fork.return_value = mock_forked_repo
         token = "fake-token"
-        repo_path = fork_repo(token, mock_original_repo)
+        repo_path = fork_repo(token, mock_original_repo)[0]
         mock_original_repo.create_fork.assert_called_once()
-        mock_clone.assert_called_once_with(
-            mock_forked_repo.clone_url, repo_path, callbacks=unittest.mock.ANY
-        )
+        mock_clone.assert_called_once()
+        call_args = mock_clone.call_args
+        self.assertEqual(call_args[0][0], mock_forked_repo.clone_url)
+        self.assertEqual(call_args[0][1], repo_path)
         self.assertEqual(repo_path, "/tmp/testrepo")
 
     @patch("edit_python_pe.main.user_data_dir", return_value="/tmp/testrepo")
@@ -523,11 +531,16 @@ class TestMainFunction(unittest.TestCase):
         self, mock_member_app, mock_fork_repo, mock_get_repo
     ):
         mock_get_repo.return_value = ("token", MagicMock())
-        mock_fork_repo.return_value = "/tmp/testrepo"
+        mock_fork_repo.return_value = ("/tmp/testrepo", MagicMock())
         mock_app_instance = MagicMock()
         mock_member_app.return_value = mock_app_instance
         main()
         mock_get_repo.assert_called_once()
         mock_fork_repo.assert_called_once()
-        mock_member_app.assert_called_once_with("/tmp/testrepo")
+        mock_member_app.assert_called_once_with(
+            unittest.mock.ANY,
+            unittest.mock.ANY,
+            unittest.mock.ANY,
+            unittest.mock.ANY,
+        )
         mock_app_instance.run.assert_called_once()
