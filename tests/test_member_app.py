@@ -41,7 +41,6 @@ class TestMemberApp(unittest.TestCase):
         self.app.email_input = StubInput()
         self.app.city_input = StubInput()
         self.app.homepage_input = StubInput()
-        self.app.about_me_area = StubTextArea()
         self.app.who_area = StubTextArea()
         self.app.python_area = StubTextArea()
         self.app.contributions_area = StubTextArea()
@@ -96,7 +95,6 @@ class TestMemberApp(unittest.TestCase):
         self.app.email_input.value = "filled@email.com"
         self.app.city_input.value = "Filled City"
         self.app.homepage_input.value = "https://filled-homepage.com"
-        self.app.about_me_area.text = "Filled About me"
         self.app.who_area.text = "Filled Who am I"
         self.app.python_area.text = "Filled Python stuff"
         self.app.contributions_area.text = "Filled Contributions"
@@ -115,7 +113,6 @@ class TestMemberApp(unittest.TestCase):
         self.assertEqual(self.app.email_input.value, "")
         self.assertEqual(self.app.city_input.value, "")
         self.assertEqual(self.app.homepage_input.value, "")
-        self.assertEqual(self.app.about_me_area.text, "Sobre mí")
         self.assertEqual(self.app.who_area.text, "¿Quién eres y a qué te dedicas?")
         self.assertEqual(self.app.python_area.text, "¿Cómo programas en Python?")
         self.assertEqual(self.app.contributions_area.text, "¿Tienes algún aporte a la comunidad de Python?")
@@ -176,7 +173,6 @@ class TestMemberApp(unittest.TestCase):
             app.email_input.value = "test@email.com"
             app.city_input.value = "Test City"
             app.homepage_input.value = "https://homepage.com"
-            app.about_me_area.text = "About me"
             app.who_area.text = "Who am I"
             app.python_area.text = "Python stuff"
             app.contributions_area.text = "Contributions"
@@ -235,7 +231,6 @@ class TestMemberApp(unittest.TestCase):
             app.email_input.value = "test@email.com"
             app.city_input.value = "Test City"
             app.homepage_input.value = "https://homepage.com"
-            app.about_me_area.text = "About me"
             app.who_area.text = "Who am I"
             app.python_area.text = "Python stuff"
             app.contributions_area.text = "Contributions"
@@ -291,7 +286,6 @@ class TestMemberApp(unittest.TestCase):
             app.email_input.value = "test@email.com"
             app.city_input.value = "Test City"
             app.homepage_input.value = "https://homepage.com"
-            app.about_me_area.text = "About me"
             app.who_area.text = "Who am I"
             app.python_area.text = "Python stuff"
             app.contributions_area.text = "Contributions"
@@ -338,7 +332,6 @@ class TestMemberApp(unittest.TestCase):
             app.email_input.value = ""
             app.city_input.value = ""
             app.homepage_input.value = ""
-            app.about_me_area.text = ""
             app.who_area.text = ""
             app.python_area.text = ""
             app.contributions_area.text = ""

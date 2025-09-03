@@ -76,7 +76,6 @@ class MemberApp(App):
         self.city_input = Input(placeholder="Ciudad")
         self.homepage_input = Input(placeholder="Página personal")
 
-        self.about_me_area = TextArea(text="Sobre mí")
         self.who_area = TextArea(text="¿Quién eres y a qué te dedicas?")
         self.python_area = TextArea(text="¿Cómo programas en Python?")
         self.contributions_area = TextArea(
@@ -112,7 +111,6 @@ class MemberApp(App):
 
         self.form_container.mount(self.city_input)
         self.form_container.mount(self.homepage_input)
-        self.form_container.mount(self.about_me_area)
         self.form_container.mount(self.who_area)
         self.form_container.mount(self.python_area)
         self.form_container.mount(self.contributions_area)
@@ -149,7 +147,6 @@ class MemberApp(App):
         self.email_input.value = ""
         self.city_input.value = ""
         self.homepage_input.value = ""
-        self.about_me_area.text = "Sobre mí"
         self.who_area.text = "¿Quién eres y a qué te dedicas?"
         self.python_area.text = "¿Cómo programas en Python?"
         self.contributions_area.text = "¿Tienes algún aporte a la comunidad de Python?"
@@ -246,13 +243,6 @@ class MemberApp(App):
             self.homepage_input.value = homepage_match.group(1).strip()
 
         # Extract markdown sections under headers
-        sobre_mi_match = re.search(
-            r"## Sobre mí\n(.*?)(?=^### |\Z)",
-            content,
-            re.DOTALL | re.MULTILINE,
-        )
-        if sobre_mi_match:
-            self.about_me_area.text = sobre_mi_match.group(1).strip()
         who_match = re.search(
             r"### ¿Quién eres y a qué te dedicas\?\n(.*?)(?=^### |\Z)",
             content,
@@ -382,7 +372,6 @@ class MemberApp(App):
         email = self.email_input.value.strip()
         city = self.city_input.value.strip()
         homepage = self.homepage_input.value.strip()
-        about_me = self.about_me_area.text.strip()
         who = self.who_area.text.strip()
         python_ = self.python_area.text.strip()
         contributions = self.contributions_area.text.strip()
@@ -456,11 +445,8 @@ class MemberApp(App):
             md_lines.append(f":Homepage: {homepage}")
             md_lines.append("")
 
-        if about_me:
-            md_lines.append("## Sobre mí")
-            md_lines.append("")
-            md_lines.append(about_me)
-            md_lines.append("")
+        md_lines.append("## Sobre mí")
+        md_lines.append("")
 
         if who:
             md_lines.append("### ¿Quién eres y a qué te dedicas?")
