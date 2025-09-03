@@ -3,8 +3,6 @@ import sys
 import unittest
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))
 )
@@ -458,6 +456,149 @@ class: "member-gravatar"
         self.assertEqual(self.app.city_input.value, "Lima")
         self.assertEqual(self.app.homepage_input.value, "https://joe-doe.org")
         self.assertGreaterEqual(len(self.app.social_entries), 1)
+
+
+class TestUtilityFunctions(unittest.TestCase):
+    def test_create_pr(self):
+        from unittest.mock import MagicMock, patch
+
+        from edit_python_pe.main import create_pr
+
+        file_content = "Test content"
+        current_file = None
+        repo_path = "/fake/repo"
+        original_repo = MagicMock()
+        forked_repo = MagicMock()
+        forked_repo.owner.login = "forkowner"
+        token = "fake-token"
+        aliases = ["alias1"]
+        name = "Test Name"
+        email = "test@email.com"
+        with (
+            patch("edit_python_pe.main.write_file") as mock_write_file,
+            patch(
+                "edit_python_pe.main.commit_and_push"
+            ) as mock_commit_and_push,
+        ):
+            mock_commit_and_push.return_value = (
+                "Added testfile.md",
+                MagicMock(),
+                MagicMock(),
+                MagicMock(),
+            )
+            original_repo.create_pull = MagicMock()
+            result = create_pr(
+                file_content,
+                current_file,
+                repo_path,
+                original_repo,
+                forked_repo,
+                token,
+                aliases,
+                name,
+                email,
+            )
+            mock_write_file.assert_called()
+            mock_commit_and_push.assert_called()
+            original_repo.create_pull.assert_called()
+            self.assertIn("guardado", result)
+
+    def test_compute_file_name_alias_used(self):
+        from edit_python_pe.main import compute_file_name
+
+        aliases = ["CoolAlias"]
+        name = "John Doe"
+        email = "john@example.com"
+        filename = compute_file_name(aliases, name, email)
+        self.assertTrue(filename.startswith("coolalias-"))
+        self.assertTrue(filename.endswith(".md"))
+        self.assertIn("-", filename)
+        self.assertEqual(filename.count("-"), 1)
+
+    def test_compute_file_name_name_used_if_no_alias(self):
+        from edit_python_pe.main import compute_file_name
+
+        aliases = []
+        name = "Jane Doe"
+        email = "jane@example.com"
+        filename = compute_file_name(aliases, name, email)
+        self.assertTrue(filename.startswith("jane_doe-"))
+        self.assertTrue(filename.endswith(".md"))
+
+    def test_compute_file_name_uniqueness(self):
+        from edit_python_pe.main import compute_file_name
+
+        aliases = ["Alias"]
+        name = "Name"
+        email1 = "email1@example.com"
+        email2 = "email2@example.com"
+        filename1 = compute_file_name(aliases, name, email1)
+        filename2 = compute_file_name(aliases, name, email2)
+        self.assertNotEqual(filename1, filename2)
+
+    def test_write_file(self):
+        import builtins
+        from unittest.mock import MagicMock, patch
+
+        from edit_python_pe.main import write_file
+
+        file_content = "Hello, world!"
+        file_path = "/tmp/testdir/testfile.txt"
+        with (
+            patch("os.makedirs") as makedirs,
+            patch("builtins.open", MagicMock()) as mock_open,
+        ):
+            write_file(file_content, file_path)
+            makedirs.assert_called_with("/tmp/testdir", exist_ok=True)
+            mock_open.assert_called_with(file_path, "w", encoding="utf-8")
+            handle = mock_open.return_value.__enter__.return_value
+            handle.write.assert_called_with(file_content)
+
+    def test_commit_and_push(self):
+        from unittest.mock import MagicMock, patch
+
+        from edit_python_pe.main import commit_and_push
+
+        repo_path = "/fake/repo"
+        token = "fake-token"
+        was_changed = True
+        name_file = "test.md"
+        file_path = "/fake/repo/blog/members/test.md"
+        name = "Test Name"
+        email = "test@email.com"
+        with patch("pygit2.repository.Repository") as RepoMock:
+            repo_instance = RepoMock.return_value
+            repo_instance.index.add = MagicMock()
+            repo_instance.index.write = MagicMock()
+            repo_instance.index.write_tree = MagicMock(return_value="treeid")
+            repo_instance.head_is_unborn = False
+            repo_instance.head = MagicMock()
+            repo_instance.head.target = "commitid"
+            repo_instance.create_commit = MagicMock()
+            repo_instance.remotes = {"origin": MagicMock()}
+            repo_instance.remotes["origin"].push = MagicMock()
+            with (
+                patch("pygit2.Signature") as SignatureMock,
+                patch(
+                    "pygit2.callbacks.RemoteCallbacks"
+                ) as RemoteCallbacksMock,
+            ):
+                SignatureMock.return_value = MagicMock()
+                RemoteCallbacksMock.return_value = MagicMock()
+                commit_msg, repo, remote, callbacks = commit_and_push(
+                    repo_path,
+                    token,
+                    was_changed,
+                    name_file,
+                    file_path,
+                    name,
+                    email,
+                )
+                repo_instance.index.add.assert_called()
+                repo_instance.index.write.assert_called()
+                repo_instance.create_commit.assert_called()
+                repo_instance.remotes["origin"].push.assert_called()
+                self.assertEqual(commit_msg, f"Changed {name_file}")
 
 
 class TestGetRepo(unittest.TestCase):
