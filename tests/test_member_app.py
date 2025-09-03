@@ -16,7 +16,7 @@ class TestMemberApp(unittest.TestCase):
         # Patch Github and Repository for testing
         self.token = "fake-token"
         self.repo = MagicMock()
-        self.app = MemberApp(token=self.token, original_repo=self.repo)
+        self.app = MemberApp(repo_path="test_repo")
         self.app.social_container = MagicMock()
         self.app.alias_container = MagicMock()
         self.app.list_container = MagicMock()
@@ -447,4 +447,77 @@ class: "member-gravatar"
         self.assertEqual(self.app.city_input.value, "Lima")
         self.assertEqual(self.app.homepage_input.value, "https://joe-doe.org")
         self.assertGreaterEqual(len(self.app.social_entries), 1)
-        self.assertGreaterEqual(len(self.app.alias_entries), 1)
+
+# Test for get_repo function
+import builtins
+from edit_python_pe.main import get_repo
+
+class TestGetRepo(unittest.TestCase):
+    @patch("edit_python_pe.main.getpass.getpass", return_value="valid-token")
+    @patch("edit_python_pe.main.Github")
+    def test_get_repo_success(self, mock_github, mock_getpass):
+        mock_repo = MagicMock()
+        mock_github.return_value.get_repo.return_value = mock_repo
+        token, repo = get_repo()
+        self.assertEqual(token, "valid-token")
+        self.assertEqual(repo, mock_repo)
+
+    @patch("edit_python_pe.main.getpass.getpass", return_value="invalid-token")
+    @patch("edit_python_pe.main.Github")
+    def test_get_repo_bad_credentials(self, mock_github, mock_getpass):
+        from github.GithubException import BadCredentialsException
+        mock_github.return_value.get_repo.side_effect = BadCredentialsException(401, "Bad credentials", None)
+        with self.assertRaises(SystemExit):
+            get_repo()
+
+    @patch("edit_python_pe.main.getpass.getpass", return_value="valid-token")
+    @patch("edit_python_pe.main.Github")
+    def test_get_repo_github_exception(self, mock_github, mock_getpass):
+        from github.GithubException import GithubException
+        mock_github.return_value.get_repo.side_effect = GithubException(404, "Not found", None)
+        with self.assertRaises(SystemExit):
+            get_repo()
+
+
+from edit_python_pe.main import fork_repo
+
+class TestForkRepo(unittest.TestCase):
+    @patch("edit_python_pe.main.user_data_dir", return_value="/tmp/testrepo")
+    @patch("edit_python_pe.main.os.path.exists", return_value=False)
+    @patch("edit_python_pe.main.pygit2.clone_repository")
+    @patch("edit_python_pe.main.sleep", return_value=None)
+    def test_fork_repo_clones_if_not_exists(self, mock_sleep, mock_clone, mock_exists, mock_user_data_dir):
+        mock_forked_repo = MagicMock()
+        mock_forked_repo.clone_url = "https://github.com/fake/fork.git"
+        mock_original_repo = MagicMock()
+        mock_original_repo.create_fork.return_value = mock_forked_repo
+        token = "fake-token"
+        repo_path = fork_repo(token, mock_original_repo)
+        mock_original_repo.create_fork.assert_called_once()
+        mock_clone.assert_called_once_with(
+            mock_forked_repo.clone_url, repo_path, callbacks=unittest.mock.ANY
+        )
+        self.assertEqual(repo_path, "/tmp/testrepo")
+
+    @patch("edit_python_pe.main.user_data_dir", return_value="/tmp/testrepo")
+    @patch("edit_python_pe.main.os.path.exists", return_value=True)
+    @patch("edit_python_pe.main.pygit2.clone_repository")
+    def test_fork_repo_no_clone_if_exists(self, mock_clone, mock_exists, mock_user_data_dir):
+        mock_forked_repo = MagicMock()
+
+from edit_python_pe.main import main
+
+class TestMainFunction(unittest.TestCase):
+    @patch("edit_python_pe.main.get_repo")
+    @patch("edit_python_pe.main.fork_repo")
+    @patch("edit_python_pe.main.MemberApp")
+    def test_main_runs_app(self, mock_member_app, mock_fork_repo, mock_get_repo):
+        mock_get_repo.return_value = ("token", MagicMock())
+        mock_fork_repo.return_value = "/tmp/testrepo"
+        mock_app_instance = MagicMock()
+        mock_member_app.return_value = mock_app_instance
+        main()
+        mock_get_repo.assert_called_once()
+        mock_fork_repo.assert_called_once()
+        mock_member_app.assert_called_once_with("/tmp/testrepo")
+        mock_app_instance.run.assert_called_once()

@@ -21,10 +21,9 @@ from textual.widgets import (Button, Input, ListItem, ListView, Select, Static,
 class MemberApp(App):
     """Single app that toggles between a file list and a form while connected to a GitHub fork+push flow."""
 
-    def __init__(self, token: str, original_repo: Repository) -> None:
+    def __init__(self, repo_path: str) -> None:
         super().__init__()
-        self.token = token
-        self.original_repo = original_repo
+        self.repo_path = repo_path
 
     def compose(self) -> ComposeResult:
         # Two main containers: self.list_container for the file list, self.form_container for the form.
@@ -35,23 +34,7 @@ class MemberApp(App):
         yield self.form_container
 
     def on_mount(self) -> None:
-        """Perform setup: do fork if needed, set up UI."""
-        self.forked_repo = self.original_repo.create_fork()
-        self.FORKED_REPO_URL = self.forked_repo.clone_url
-        self.REPO_PATH = user_data_dir(
-            appname="edit-python-pe", appauthor="python.pe"
-        )
-
-        if not os.path.exists(self.REPO_PATH):
-            callbacks = pygit2.callbacks.RemoteCallbacks(
-                credentials=pygit2.UserPass(self.token, "x-oauth-basic")
-            )
-            sleep(3)
-            pygit2.clone_repository(
-                self.FORKED_REPO_URL, self.REPO_PATH, callbacks=callbacks
-            )
-
-        # 2) Build the list portion
+        # 1) Build the list portion
         self.list_title = Static("Archivos en 'blog/members':")
         self.list_view = ListView()
         self.quit_list_button = Button("Salir", id="quit_list")
@@ -63,13 +46,13 @@ class MemberApp(App):
         self.list_container.mount(self.quit_list_button)
 
         md_files = glob.glob(
-            os.path.join(self.REPO_PATH, "blog", "members", "*.md")
+            os.path.join(self.repo_path, "blog", "members", "*.md")
         )
         for f in md_files:
             basename = os.path.basename(f)
             self.list_view.append(ListItem(Static(basename)))
 
-        # 3) Build the form portion, hidden at first
+        # 2) Build the form portion, hidden at first
         self.form_header = Static("Formulario de Miembro", classes="header")
         self.name_input = Input(placeholder="Nombre")
         self.email_input = Input(placeholder="Correo electrónico")
@@ -175,7 +158,7 @@ class MemberApp(App):
         self.show_form()
 
     def load_file_into_form(self, filename: str) -> None:
-        path_md = os.path.join(self.REPO_PATH, "blog", "members", filename)
+        path_md = os.path.join(self.repo_path, "blog", "members", filename)
         if not os.path.exists(path_md):
             return
         try:
@@ -494,20 +477,20 @@ class MemberApp(App):
 
             # Write file
             file_path = os.path.join(
-                self.REPO_PATH, "blog", "members", f"{name_file}.md"
+                self.repo_path, "blog", "members", f"{name_file}.md"
             )
         else:
             name_file = self.current_file
             file_path = os.path.join(
-                self.REPO_PATH, "blog", "members", f"{name_file}"
+                self.repo_path, "blog", "members", f"{name_file}"
             )
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(md_content)
 
         # commit & push
-        repo = pygit2.Repository(self.REPO_PATH)
-        rel_path = os.path.relpath(file_path, self.REPO_PATH)
+        repo = pygit2.Repository(self.repo_path)
+        rel_path = os.path.relpath(file_path, self.repo_path)
         rel_path = pathlib.Path(rel_path).as_posix() # Force path to POSIX format so Windows backslashes (\) don't break pygit2
         repo.index.add(rel_path)
         repo.index.write()
@@ -592,7 +575,7 @@ class MemberApp(App):
 
 
 def get_repo() -> tuple[str, Repository]:
-    token: str = getpass.getpass(
+    token = getpass.getpass(
         "Por favor ingrese su access token personal de GitHub: "
     )
     g = Github(token)
@@ -609,9 +592,28 @@ def get_repo() -> tuple[str, Repository]:
         exit(1)
 
 
+def fork_repo(token: str, original_repo: Repository) -> str:
+    forked_repo = original_repo.create_fork()
+    forked_repo_url = forked_repo.clone_url
+    repo_path = user_data_dir(
+        appname="edit-python-pe", appauthor="python.pe"
+    )
+
+    if not os.path.exists(repo_path):
+        callbacks = pygit2.callbacks.RemoteCallbacks(
+            credentials=pygit2.UserPass(token, "x-oauth-basic")
+        )
+        sleep(3)
+        pygit2.clone_repository(
+            forked_repo_url, repo_path, callbacks=callbacks
+        )
+    return repo_path
+
+
 def main() -> None:
     token, original_repo = get_repo()
-    app = MemberApp(token=token, original_repo=original_repo)
+    repo_path = fork_repo(token, original_repo)
+    app = MemberApp(repo_path)
     app.run()
 
 
