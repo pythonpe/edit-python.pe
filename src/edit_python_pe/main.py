@@ -2,10 +2,11 @@ import getpass
 import glob
 import hashlib
 import os
+import pathlib
 import re
 from datetime import datetime
 from time import sleep
-import pathlib
+
 import pygit2
 from github import Github
 from github.GithubException import BadCredentialsException, GithubException
@@ -132,8 +133,12 @@ class MemberApp(App):
         self.homepage_input.value = ""
         self.who_area.text = "¿Quién eres y a qué te dedicas?"
         self.python_area.text = "¿Cómo programas en Python?"
-        self.contributions_area.text = "¿Tienes algún aporte a la comunidad de Python?"
-        self.availability_area.text = "¿Estás disponible para hacer mentoring, consultorías, charlas?"
+        self.contributions_area.text = (
+            "¿Tienes algún aporte a la comunidad de Python?"
+        )
+        self.availability_area.text = (
+            "¿Estás disponible para hacer mentoring, consultorías, charlas?"
+        )
 
         for soc in self.social_entries:
             soc.remove()
@@ -491,7 +496,9 @@ class MemberApp(App):
         # commit & push
         repo = pygit2.Repository(self.repo_path)
         rel_path = os.path.relpath(file_path, self.repo_path)
-        rel_path = pathlib.Path(rel_path).as_posix() # Force path to POSIX format so Windows backslashes (\) don't break pygit2
+        rel_path = pathlib.Path(
+            rel_path
+        ).as_posix()  # Force path to POSIX format so Windows backslashes (\) don't break pygit2
         repo.index.add(rel_path)
         repo.index.write()
         author_sig = pygit2.Signature(
@@ -595,9 +602,7 @@ def get_repo() -> tuple[str, Repository]:
 def fork_repo(token: str, original_repo: Repository) -> str:
     forked_repo = original_repo.create_fork()
     forked_repo_url = forked_repo.clone_url
-    repo_path = user_data_dir(
-        appname="edit-python-pe", appauthor="python.pe"
-    )
+    repo_path = user_data_dir(appname="edit-python-pe", appauthor="python.pe")
 
     if not os.path.exists(repo_path):
         callbacks = pygit2.callbacks.RemoteCallbacks(

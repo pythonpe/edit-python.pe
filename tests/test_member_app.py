@@ -102,21 +102,34 @@ class TestMemberApp(unittest.TestCase):
         # Add social and alias entries
         self.app.social_entries = [self.StubSocialEntry()]
         self.app.alias_entries = [self.StubAliasEntry()]
+
         # Simulate pressing the 'Añadir' button on the list screen
         class DummyButton:
             id = "add_list"
+
         class DummyEvent:
             button = DummyButton()
+
         self.app.on_button_pressed(DummyEvent())
         # After pressing, form should be cleared and current_file should be None
         self.assertEqual(self.app.name_input.value, "")
         self.assertEqual(self.app.email_input.value, "")
         self.assertEqual(self.app.city_input.value, "")
         self.assertEqual(self.app.homepage_input.value, "")
-        self.assertEqual(self.app.who_area.text, "¿Quién eres y a qué te dedicas?")
-        self.assertEqual(self.app.python_area.text, "¿Cómo programas en Python?")
-        self.assertEqual(self.app.contributions_area.text, "¿Tienes algún aporte a la comunidad de Python?")
-        self.assertEqual(self.app.availability_area.text, "¿Estás disponible para hacer mentoring, consultorías, charlas?")
+        self.assertEqual(
+            self.app.who_area.text, "¿Quién eres y a qué te dedicas?"
+        )
+        self.assertEqual(
+            self.app.python_area.text, "¿Cómo programas en Python?"
+        )
+        self.assertEqual(
+            self.app.contributions_area.text,
+            "¿Tienes algún aporte a la comunidad de Python?",
+        )
+        self.assertEqual(
+            self.app.availability_area.text,
+            "¿Estás disponible para hacer mentoring, consultorías, charlas?",
+        )
         self.assertEqual(len(self.app.social_entries), 0)
         self.assertEqual(len(self.app.alias_entries), 0)
         self.assertIsNone(self.app.current_file)
@@ -448,9 +461,12 @@ class: "member-gravatar"
         self.assertEqual(self.app.homepage_input.value, "https://joe-doe.org")
         self.assertGreaterEqual(len(self.app.social_entries), 1)
 
+
 # Test for get_repo function
 import builtins
+
 from edit_python_pe.main import get_repo
+
 
 class TestGetRepo(unittest.TestCase):
     @patch("edit_python_pe.main.getpass.getpass", return_value="valid-token")
@@ -466,7 +482,10 @@ class TestGetRepo(unittest.TestCase):
     @patch("edit_python_pe.main.Github")
     def test_get_repo_bad_credentials(self, mock_github, mock_getpass):
         from github.GithubException import BadCredentialsException
-        mock_github.return_value.get_repo.side_effect = BadCredentialsException(401, "Bad credentials", None)
+
+        mock_github.return_value.get_repo.side_effect = (
+            BadCredentialsException(401, "Bad credentials", None)
+        )
         with self.assertRaises(SystemExit):
             get_repo()
 
@@ -474,19 +493,25 @@ class TestGetRepo(unittest.TestCase):
     @patch("edit_python_pe.main.Github")
     def test_get_repo_github_exception(self, mock_github, mock_getpass):
         from github.GithubException import GithubException
-        mock_github.return_value.get_repo.side_effect = GithubException(404, "Not found", None)
+
+        mock_github.return_value.get_repo.side_effect = GithubException(
+            404, "Not found", None
+        )
         with self.assertRaises(SystemExit):
             get_repo()
 
 
 from edit_python_pe.main import fork_repo
 
+
 class TestForkRepo(unittest.TestCase):
     @patch("edit_python_pe.main.user_data_dir", return_value="/tmp/testrepo")
     @patch("edit_python_pe.main.os.path.exists", return_value=False)
     @patch("edit_python_pe.main.pygit2.clone_repository")
     @patch("edit_python_pe.main.sleep", return_value=None)
-    def test_fork_repo_clones_if_not_exists(self, mock_sleep, mock_clone, mock_exists, mock_user_data_dir):
+    def test_fork_repo_clones_if_not_exists(
+        self, mock_sleep, mock_clone, mock_exists, mock_user_data_dir
+    ):
         mock_forked_repo = MagicMock()
         mock_forked_repo.clone_url = "https://github.com/fake/fork.git"
         mock_original_repo = MagicMock()
@@ -502,16 +527,22 @@ class TestForkRepo(unittest.TestCase):
     @patch("edit_python_pe.main.user_data_dir", return_value="/tmp/testrepo")
     @patch("edit_python_pe.main.os.path.exists", return_value=True)
     @patch("edit_python_pe.main.pygit2.clone_repository")
-    def test_fork_repo_no_clone_if_exists(self, mock_clone, mock_exists, mock_user_data_dir):
+    def test_fork_repo_no_clone_if_exists(
+        self, mock_clone, mock_exists, mock_user_data_dir
+    ):
         mock_forked_repo = MagicMock()
 
+
 from edit_python_pe.main import main
+
 
 class TestMainFunction(unittest.TestCase):
     @patch("edit_python_pe.main.get_repo")
     @patch("edit_python_pe.main.fork_repo")
     @patch("edit_python_pe.main.MemberApp")
-    def test_main_runs_app(self, mock_member_app, mock_fork_repo, mock_get_repo):
+    def test_main_runs_app(
+        self, mock_member_app, mock_fork_repo, mock_get_repo
+    ):
         mock_get_repo.return_value = ("token", MagicMock())
         mock_fork_repo.return_value = "/tmp/testrepo"
         mock_app_instance = MagicMock()
