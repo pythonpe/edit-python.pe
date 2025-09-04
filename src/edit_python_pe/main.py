@@ -4,7 +4,7 @@ import hashlib
 import os
 import pathlib
 import re
-from datetime import datetime
+from datetime import date, datetime
 from time import sleep
 
 import pygit2
@@ -83,7 +83,7 @@ class MemberApp(App):
         self.back_button = Button("Atrás", id="back")
         self.quit_button = Button("Salir", id="quit")
 
-        # Mount them in the form container
+        # 3) Mount them in the form container
         self.form_container.mount(self.form_header)
         self.form_container.mount(self.name_input)
         self.form_container.mount(self.email_input)
@@ -186,10 +186,10 @@ class MemberApp(App):
         if not os.path.exists(path_md):
             return
         try:
-            with open(path_md, "r", encoding="utf-8") as fh:
-                content = fh.read()
+            with open(path_md, "r", encoding="utf-8") as fd:
+                content = fd.read()
         except Exception as e:
-            self.exit(f"Error loading file {filename}: {e}")
+            self.exit(f"Error al leer el archivo {filename}: {e}")
             return
 
         self.clear_form()
@@ -308,6 +308,18 @@ class MemberApp(App):
 
     def add_social_entry(self) -> None:
         class SocialEntry(Horizontal):
+            DEFAULT_CSS = """
+                SocialEntry Select {
+                   width: 25%; 
+                }
+                SocialEntry Input {
+                   width: 50%; 
+                }
+                SocialEntry Button {
+                   width: 25%; 
+                }
+            """
+
             def __init__(se, index):
                 super().__init__()
                 se.index = index
@@ -348,7 +360,16 @@ class MemberApp(App):
             found.remove()
 
     def add_alias_entry(self) -> None:
-        class AliasEntryRow(Horizontal):
+        class AliasEntry(Horizontal):
+            DEFAULT_CSS = """
+                AliasEntry Input {
+                   width: 75%; 
+                }
+                AliasEntry Button {
+                   width: 25%; 
+                }
+            """
+
             def __init__(se, index):
                 super().__init__()
                 se.index = index
@@ -359,7 +380,7 @@ class MemberApp(App):
                 yield se.alias_input
                 yield se.delete_btn
 
-        row = AliasEntryRow(self.alias_index)
+        row = AliasEntry(self.alias_index)
         self.alias_index += 1
         self.alias_entries.append(row)
         self.alias_container.mount(row)
@@ -403,15 +424,14 @@ class MemberApp(App):
         md_lines = [
             "---",
             "blogpost: true",
-            f"author: {name}",
+            f"date: {date.today().strftime("%d %b, %Y")}",
+            f"author: {get_alias(aliases, name)}",
             f"location: {city}",
             "category: members",
             "language: Español",
             "image: 1",
             "excerpt: 1",
             "---",
-            "",
-            "% NOTA: No olvidar poner la fecha de publicación debajo de `blogpost: true`",
             "",
             f"# {name}",
             "",
@@ -553,10 +573,21 @@ def compute_file_name(aliases: list[str], name: str, email: str) -> str:
     return f"{alias_for_name}-{sha_hash}.md"
 
 
+def read_file(file_path: str) -> str:
+    with open(file_path, "r", encoding="utf-8") as fd:
+        return fd.read()
+
+
+def append_file(file_content: str, file_path: str) -> None:
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, "a", encoding="utf-8") as fd:
+        fd.write(file_content)
+
+
 def write_file(file_content: str, file_path: str) -> None:
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(file_content)
+    with open(file_path, "w", encoding="utf-8") as fd:
+        fd.write(file_content)
 
 
 def commit_and_push(
@@ -564,7 +595,6 @@ def commit_and_push(
     token: str,
     was_changed: bool,
     name_file: str,
-    file_path: str,
     name: str,
     email: str,
 ) -> tuple[
@@ -574,11 +604,7 @@ def commit_and_push(
     pygit2.callbacks.RemoteCallbacks,
 ]:
     repo = pygit2.repository.Repository(repo_path)
-    rel_path = os.path.relpath(file_path, repo_path)
-    rel_path = pathlib.Path(
-        rel_path
-    ).as_posix()  # Force path to POSIX format so Windows backslashes (\) don't break pygit2
-    repo.index.add(rel_path)
+    repo.index.add_all()
     repo.index.write()
     author_sig = pygit2.Signature(name or "Unknown", email or "unknown@email")
     tree_id = repo.index.write_tree()
@@ -598,6 +624,43 @@ def commit_and_push(
     return commit_msg, repo, remote, callbacks
 
 
+def get_alias(aliases: list[str], name: str) -> str:
+    if aliases:
+        return aliases[0]
+    return name
+
+
+def create_member_file(
+    file_content: str,
+    current_file: str | None,
+    repo_path: str,
+    aliases: list[str],
+    name: str,
+    email: str,
+) -> tuple[str, str]:
+    # Name the file
+    name_file = (
+        current_file
+        if current_file is not None
+        else compute_file_name(aliases, name, email)
+    )
+
+    # Write file
+    file_path = os.path.join(repo_path, "blog", "members", name_file)
+    write_file(file_content, file_path)
+    return name_file, file_path
+
+
+def write_authors_file(
+    repo_path: str, aliases: list[str], name: str, email: str
+):
+    file_path = os.path.join(repo_path, "AUTHORS")
+    contents = read_file(file_path)
+    file_content = f"\n{name}({get_alias(aliases, name)}) <{email}>"
+    if file_content.strip() not in contents:
+        append_file(file_content, file_path)
+
+
 def create_pr(
     file_content: str,
     current_file: str | None,
@@ -609,16 +672,10 @@ def create_pr(
     name: str,
     email: str,
 ) -> str:
-    # Name the file
-    name_file = (
-        current_file
-        if current_file is not None
-        else compute_file_name(aliases, name, email)
+    name_file, file_path = create_member_file(
+        file_content, current_file, repo_path, aliases, name, email
     )
-
-    # Write file
-    file_path = os.path.join(repo_path, "blog", "members", name_file)
-    write_file(file_content, file_path)
+    write_authors_file(repo_path, aliases, name, email)
 
     # commit & push
     commit_msg, repo, remote, callbacks = commit_and_push(
@@ -626,7 +683,6 @@ def create_pr(
         token,
         current_file is not None,
         name_file,
-        file_path,
         name,
         email,
     )

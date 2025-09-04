@@ -155,8 +155,6 @@ class TestMemberApp(unittest.TestCase):
 
     def test_save_member_edit_no_pr(self):
         """Test editing an existing member without a matching PR in save_member."""
-        from unittest.mock import MagicMock, patch
-
         app = self.app
         app.current_file = "existing_member.md"
         app.token = "fake-token"
@@ -202,7 +200,7 @@ class TestMemberApp(unittest.TestCase):
             app.social_entries.append(social_entry)
             app.save_member()
             makedirs.assert_called()
-            repo_instance.index.add.assert_called()
+            repo_instance.index.add_all.assert_called()
             repo_instance.create_commit.assert_called()
             repo_instance.remotes["origin"].push.assert_called()
             app.original_repo.create_pull.assert_called()
@@ -259,7 +257,7 @@ class TestMemberApp(unittest.TestCase):
             app.social_entries.append(social_entry)
             app.save_member()
             makedirs.assert_called()
-            repo_instance.index.add.assert_called()
+            repo_instance.index.add_all.assert_called()
             repo_instance.create_commit.assert_called()
             repo_instance.remotes["origin"].push.assert_called()
             # Instead of asserting create_pull is not called, check that get_pulls was called and the PR was handled.
@@ -269,9 +267,6 @@ class TestMemberApp(unittest.TestCase):
 
     def test_save_member_new(self):
         """Test creating a new member scenario in save_member."""
-        import builtins
-        from unittest.mock import MagicMock, patch
-
         app = self.app
         app.current_file = None
         app.token = "fake-token"
@@ -313,15 +308,13 @@ class TestMemberApp(unittest.TestCase):
             app.social_entries.append(social_entry)
             app.save_member()
             makedirs.assert_called()
-            repo_instance.index.add.assert_called()
+            repo_instance.index.add_all.assert_called()
             repo_instance.create_commit.assert_called()
             repo_instance.remotes["origin"].push.assert_called()
             app.original_repo.create_pull.assert_called()
 
     def test_save_member_error_handling(self):
         """Test error handling in save_member when required fields are missing."""
-        from unittest.mock import MagicMock, patch
-
         app = self.app
         app.current_file = None
         app.token = "fake-token"
@@ -459,49 +452,115 @@ class: "member-gravatar"
 
 
 class TestUtilityFunctions(unittest.TestCase):
-    def test_create_pr(self):
-        from unittest.mock import MagicMock, patch
+    def test_create_member_file(self):
+        from unittest.mock import patch
 
-        from edit_python_pe.main import create_pr
+        from edit_python_pe.main import create_member_file
 
-        file_content = "Test content"
+        file_content = "Sample member content"
         current_file = None
         repo_path = "/fake/repo"
-        original_repo = MagicMock()
-        forked_repo = MagicMock()
-        forked_repo.owner.login = "forkowner"
-        token = "fake-token"
         aliases = ["alias1"]
         name = "Test Name"
         email = "test@email.com"
+        expected_filename_prefix = "alias1-"
+        with patch("edit_python_pe.main.write_file") as mock_write_file:
+            name_file, file_path = create_member_file(
+                file_content, current_file, repo_path, aliases, name, email
+            )
+            mock_write_file.assert_called_once_with(file_content, file_path)
+            self.assertTrue(name_file.startswith(expected_filename_prefix))
+            self.assertTrue(name_file.endswith(".md"))
+            self.assertIn("blog/members/", file_path)
+            self.assertTrue(file_path.endswith(name_file))
+
+        # Test with current_file provided
+        current_file = "existing.md"
+        with patch("edit_python_pe.main.write_file") as mock_write_file:
+            name_file, file_path = create_member_file(
+                file_content, current_file, repo_path, aliases, name, email
+            )
+            self.assertEqual(name_file, current_file)
+            self.assertTrue(file_path.endswith(current_file))
+            mock_write_file.assert_called_once_with(file_content, file_path)
+
+        name = "Test Name"
+        email = "test@email.com"
+
+    def test_write_authors_file(self):
+        from unittest.mock import patch
+
+        from edit_python_pe.main import write_authors_file
+
+        repo_path = "/fake/repo"
+        aliases = ["alias1"]
+        name = "Test Name"
+        email = "test@email.com"
+        file_path = f"{repo_path}/AUTHORS"
+        # Case: author not present, should append
         with (
-            patch("edit_python_pe.main.write_file") as mock_write_file,
             patch(
-                "edit_python_pe.main.commit_and_push"
-            ) as mock_commit_and_push,
+                "edit_python_pe.main.read_file", return_value=""
+            ) as mock_read_file,
+            patch("edit_python_pe.main.append_file") as mock_append_file,
         ):
-            mock_commit_and_push.return_value = (
-                "Added testfile.md",
-                MagicMock(),
-                MagicMock(),
-                MagicMock(),
+            write_authors_file(repo_path, aliases, name, email)
+            mock_read_file.assert_called_once_with(file_path)
+            mock_append_file.assert_called_once()
+            args, _ = mock_append_file.call_args
+            self.assertIn(name, args[0])
+            self.assertIn(email, args[0])
+
+        # Case: author already present, should not append
+        existing_line = f"\n{name}(alias1) <{email}>"
+        with (
+            patch(
+                "edit_python_pe.main.read_file", return_value=existing_line
+            ) as mock_read_file,
+            patch("edit_python_pe.main.append_file") as mock_append_file,
+        ):
+            write_authors_file(repo_path, aliases, name, email)
+            mock_read_file.assert_called_once_with(file_path)
+            mock_append_file.assert_not_called()
+
+    def test_get_alias(self):
+        from edit_python_pe.main import get_alias
+
+        # Case: aliases present
+        aliases = ["CoolAlias"]
+        name = "John Doe"
+        self.assertEqual(get_alias(aliases, name), "CoolAlias")
+        # Case: aliases absent
+        aliases = []
+        self.assertEqual(get_alias(aliases, name), name)
+        # Case: aliases absent
+        aliases = []
+
+    def test_read_file(self):
+        from edit_python_pe.main import read_file
+
+        file_path = "/tmp/testfile.txt"
+        expected_content = "Hello, world!"
+        with patch("builtins.open", MagicMock()) as mock_open:
+            mock_open.return_value.__enter__.return_value.read.return_value = (
+                expected_content
             )
-            original_repo.create_pull = MagicMock()
-            result = create_pr(
-                file_content,
-                current_file,
-                repo_path,
-                original_repo,
-                forked_repo,
-                token,
-                aliases,
-                name,
-                email,
-            )
-            mock_write_file.assert_called()
-            mock_commit_and_push.assert_called()
-            original_repo.create_pull.assert_called()
-            self.assertIn("guardado", result)
+            result = read_file(file_path)
+            mock_open.assert_called_with(file_path, "r", encoding="utf-8")
+
+    def test_append_file(self):
+        from edit_python_pe.main import append_file
+
+        file_content = "Append this!"
+        file_path = "/tmp/testdir/testfile.txt"
+        with (
+            patch("os.makedirs") as makedirs,
+            patch("builtins.open", MagicMock()) as mock_open,
+        ):
+            append_file(file_content, file_path)
+            makedirs.assert_called_with("/tmp/testdir", exist_ok=True)
+            mock_open.assert_called_with(file_path, "a", encoding="utf-8")
+            handle = mock_open.return_value.__enter__.return_value
 
     def test_compute_file_name_alias_used(self):
         from edit_python_pe.main import compute_file_name
@@ -537,8 +596,6 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertNotEqual(filename1, filename2)
 
     def test_write_file(self):
-        import builtins
-        from unittest.mock import MagicMock, patch
 
         from edit_python_pe.main import write_file
 
@@ -555,15 +612,12 @@ class TestUtilityFunctions(unittest.TestCase):
             handle.write.assert_called_with(file_content)
 
     def test_commit_and_push(self):
-        from unittest.mock import MagicMock, patch
-
         from edit_python_pe.main import commit_and_push
 
         repo_path = "/fake/repo"
         token = "fake-token"
         was_changed = True
         name_file = "test.md"
-        file_path = "/fake/repo/blog/members/test.md"
         name = "Test Name"
         email = "test@email.com"
         with patch("pygit2.repository.Repository") as RepoMock:
@@ -590,11 +644,10 @@ class TestUtilityFunctions(unittest.TestCase):
                     token,
                     was_changed,
                     name_file,
-                    file_path,
                     name,
                     email,
                 )
-                repo_instance.index.add.assert_called()
+                repo_instance.index.add_all.assert_called()
                 repo_instance.index.write.assert_called()
                 repo_instance.create_commit.assert_called()
                 repo_instance.remotes["origin"].push.assert_called()
@@ -662,6 +715,14 @@ class TestForkRepo(unittest.TestCase):
         self, mock_clone, mock_exists, mock_user_data_dir
     ):
         mock_forked_repo = MagicMock()
+        mock_forked_repo.clone_url = "https://github.com/fake/fork.git"
+        mock_original_repo = MagicMock()
+        mock_original_repo.create_fork.return_value = mock_forked_repo
+        token = "fake-token"
+        repo_path = fork_repo(token, mock_original_repo)[0]
+        mock_original_repo.create_fork.assert_called_once()
+        mock_clone.assert_not_called()
+        self.assertEqual(repo_path, "/tmp/testrepo")
 
 
 class TestMainFunction(unittest.TestCase):
