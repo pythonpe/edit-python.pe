@@ -31,7 +31,7 @@ jobs:
 
       - name: Build artifacts
         run: |
-          uv run build
+          uv build
 
       - name: Upload artifacts
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
