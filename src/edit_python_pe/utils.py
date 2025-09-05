@@ -2,6 +2,7 @@ import getpass
 import hashlib
 import os
 import re
+import shutil
 from datetime import date, datetime
 from time import sleep
 from typing import TYPE_CHECKING
@@ -141,14 +142,14 @@ def fork_repo(token: str, original_repo: Repository) -> tuple[str, Repository]:
     forked_repo_url = forked_repo.clone_url
     repo_path = user_data_dir(appname="edit-python-pe", appauthor="python.pe")
 
-    if not os.path.exists(repo_path):
-        callbacks = pygit2.callbacks.RemoteCallbacks(
-            credentials=pygit2.UserPass(token, "x-oauth-basic")
-        )
-        sleep(3)
-        pygit2.clone_repository(
-            forked_repo_url, repo_path, callbacks=callbacks
-        )
+    if os.path.exists(repo_path):
+        shutil.rmtree(repo_path)
+
+    callbacks = pygit2.callbacks.RemoteCallbacks(
+        credentials=pygit2.UserPass(token, "x-oauth-basic")
+    )
+    sleep(3)
+    pygit2.clone_repository(forked_repo_url, repo_path, callbacks=callbacks)
     return repo_path, forked_repo
 
 

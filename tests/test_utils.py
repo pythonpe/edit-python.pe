@@ -252,10 +252,16 @@ class TestGetRepo(unittest.TestCase):
 class TestForkRepo(unittest.TestCase):
     @patch("edit_python_pe.utils.user_data_dir", return_value="/tmp/testrepo")
     @patch("edit_python_pe.utils.os.path.exists", return_value=False)
+    @patch("edit_python_pe.utils.shutil.rmtree")
     @patch("edit_python_pe.utils.pygit2.clone_repository")
     @patch("edit_python_pe.utils.sleep", return_value=None)
-    def test_fork_repo_clones_if_not_exists(
-        self, mock_sleep, mock_clone, mock_exists, mock_user_data_dir
+    def test_fork_repo_no_remove_if_not_exists(
+        self,
+        mock_sleep,
+        mock_clone,
+        mock_rmtree,
+        mock_exists,
+        mock_user_data_dir,
     ):
         mock_forked_repo = MagicMock()
         mock_forked_repo.clone_url = "https://github.com/fake/fork.git"
@@ -265,6 +271,7 @@ class TestForkRepo(unittest.TestCase):
         repo_path = fork_repo(token, mock_original_repo)[0]
         mock_original_repo.create_fork.assert_called_once()
         mock_clone.assert_called_once()
+        mock_rmtree.assert_not_called()
         call_args = mock_clone.call_args
         self.assertEqual(call_args[0][0], mock_forked_repo.clone_url)
         self.assertEqual(call_args[0][1], repo_path)
@@ -272,9 +279,16 @@ class TestForkRepo(unittest.TestCase):
 
     @patch("edit_python_pe.utils.user_data_dir", return_value="/tmp/testrepo")
     @patch("edit_python_pe.utils.os.path.exists", return_value=True)
+    @patch("edit_python_pe.utils.shutil.rmtree")
     @patch("edit_python_pe.utils.pygit2.clone_repository")
-    def test_fork_repo_no_clone_if_exists(
-        self, mock_clone, mock_exists, mock_user_data_dir
+    @patch("edit_python_pe.utils.sleep", return_value=None)
+    def test_fork_repo_remove_if_exists(
+        self,
+        mock_sleep,
+        mock_clone,
+        mock_rmtree,
+        mock_exists,
+        mock_user_data_dir,
     ):
         mock_forked_repo = MagicMock()
         mock_forked_repo.clone_url = "https://github.com/fake/fork.git"
@@ -283,5 +297,6 @@ class TestForkRepo(unittest.TestCase):
         token = "fake-token"
         repo_path = fork_repo(token, mock_original_repo)[0]
         mock_original_repo.create_fork.assert_called_once()
-        mock_clone.assert_not_called()
+        mock_rmtree.assert_called_once()
+        mock_clone.assert_called_once()
         self.assertEqual(repo_path, "/tmp/testrepo")
