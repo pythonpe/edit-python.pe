@@ -80,7 +80,7 @@ class TestMemberApp(unittest.TestCase):
         # Patch mount to accept any object
         self.app.social_container.mount = lambda x: None  # type: ignore
 
-        def stub_add_social_entry():
+        def stub_add_social_entry(value):
             entry = self.StubSocialEntry()
             entry.index = self.app.social_index
             self.app.social_index += 1
@@ -89,7 +89,7 @@ class TestMemberApp(unittest.TestCase):
 
         self.app.add_social_entry = stub_add_social_entry
         initial_count = len(self.app.social_entries)
-        self.app.add_social_entry()
+        self.app.add_social_entry("")
         self.assertEqual(len(self.app.social_entries), initial_count + 1)
 
     def test_add_list_button_clears_form(self):
@@ -350,7 +350,7 @@ class TestMemberApp(unittest.TestCase):
         self.app.social_container.remove_children = lambda: None  # type: ignore
         self.app.alias_container.remove_children = lambda: None  # type: ignore
 
-        def stub_add_social_entry():
+        def stub_add_social_entry(value):
             entry = self.StubSocialEntry()
             entry.index = self.app.social_index
             self.app.social_index += 1
@@ -366,7 +366,7 @@ class TestMemberApp(unittest.TestCase):
 
         self.app.add_social_entry = stub_add_social_entry
         self.app.add_alias_entry = stub_add_alias_entry
-        self.app.add_social_entry()
+        self.app.add_social_entry("")
         self.app.add_alias_entry()
         self.app.clear_form()
         self.assertEqual(len(self.app.social_entries), 0)
@@ -407,7 +407,7 @@ class: "member-gravatar"
         self.app.social_entries = []
         self.app.alias_entries = []
 
-        def stub_add_social_entry():
+        def stub_add_social_entry(value):
             entry = self.StubSocialEntry()
             entry.index = self.app.social_index
             self.app.social_index += 1
