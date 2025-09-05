@@ -69,17 +69,16 @@ class MemberApp(App):
         # 2) Build the form portion, hidden at first
         self.form_header = Static(FORM_HEADER, classes="header")
         self.name_input = Input(placeholder=PLACEHOLDER_NAME,
-                                tooltip="Your name will be displayed publicly on your python.pe profile. " \
+                                tooltip="Your name will be displayed publicly on your python.pe profile. " 
                                 "Please use the name you wish to be known by in the community.")
         self.email_input = Input(placeholder=PLACEHOLDER_EMAIL,
-                                 tooltip="Your email is used for your Gravatar profile image and will not be published. " 
-                                 "It is stored securely and only used for necessary communications.")
+                                 tooltip= "Your email may appear in the repository or site outputs. "
+                                "Only provide an address you are comfortable sharing publicly.")
         self.city_input = Input(placeholder=PLACEHOLDER_CITY,
-                                 tooltip="Your city/country helps community members find others nearby. " \
+                                 tooltip="Your city/country helps community members find others nearby. " 
                                  "This will be publicly visible on your profile.")
         self.homepage_input = Input(placeholder=PLACEHOLDER_HOMEPAGE,
-                                    tooltip="Your personal website, blog, or portfolio link. " \
-                                    "This will be publicly displayed on your profile.")
+                                    tooltip="Your availability will be publicly visible to help community members know when they can reach out.")
 
         self.who_area = TextArea(tooltip="This introduction will be publicly visible on your python.pe profile.")
         self.python_area = TextArea(tooltip="Your Python experience and interests will be publicly visible.")
