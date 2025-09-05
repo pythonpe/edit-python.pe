@@ -2,14 +2,15 @@ import gettext
 import locale
 from pathlib import Path
 
-from .constants import EN_LOCALE, ES_LOCALE, FR_LOCALE, IT_LOCALE
+from .constants import EN_LOCALE
 
 default_locale = locale.getlocale()[0] or EN_LOCALE
-localedir = Path(__file__).parent.parent / "translations"
+localedir = Path(__file__).parent.parent.parent / "translations"
+print(localedir)
 _ = gettext.translation(
     domain="messages",
     localedir=localedir,
-    languages=[default_locale, ES_LOCALE, IT_LOCALE, FR_LOCALE],
+    languages=[default_locale],
     fallback=True,
 ).gettext
 

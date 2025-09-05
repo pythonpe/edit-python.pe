@@ -1,8 +1,5 @@
 # Locales
 EN_LOCALE = "en"
-ES_LOCALE = "es"
-IT_LOCALE = "it"
-FR_LOCALE = "fr"
 
 # Social network options
 GITHUB_OPTION = ("GitHub", "github")
