@@ -68,15 +68,23 @@ class MemberApp(App):
 
         # 2) Build the form portion, hidden at first
         self.form_header = Static(FORM_HEADER, classes="header")
-        self.name_input = Input(placeholder=PLACEHOLDER_NAME)
-        self.email_input = Input(placeholder=PLACEHOLDER_EMAIL)
-        self.city_input = Input(placeholder=PLACEHOLDER_CITY)
-        self.homepage_input = Input(placeholder=PLACEHOLDER_HOMEPAGE)
+        self.name_input = Input(placeholder=PLACEHOLDER_NAME,
+                                tooltip="Your name will be displayed publicly on your python.pe profile. " \
+                                "Please use the name you wish to be known by in the community.")
+        self.email_input = Input(placeholder=PLACEHOLDER_EMAIL,
+                                 tooltip="Your email is used for your Gravatar profile image and will not be published. " 
+                                 "It is stored securely and only used for necessary communications.")
+        self.city_input = Input(placeholder=PLACEHOLDER_CITY,
+                                 tooltip="Your city/country helps community members find others nearby. " \
+                                 "This will be publicly visible on your profile.")
+        self.homepage_input = Input(placeholder=PLACEHOLDER_HOMEPAGE,
+                                    tooltip="Your personal website, blog, or portfolio link. " \
+                                    "This will be publicly displayed on your profile.")
 
-        self.who_area = TextArea()
-        self.python_area = TextArea()
-        self.contributions_area = TextArea()
-        self.availability_area = TextArea()
+        self.who_area = TextArea(tooltip="This introduction will be publicly visible on your python.pe profile.")
+        self.python_area = TextArea(tooltip="Your Python experience and interests will be publicly visible.")
+        self.contributions_area = TextArea(tooltip="Your contribution history will be publicly visible to help showcase your work.")
+        self.availability_area = TextArea(tooltip="Your availability information will help community members know when they can reach out.")
 
         self.social_container = Vertical()
         self.alias_container = Vertical()
