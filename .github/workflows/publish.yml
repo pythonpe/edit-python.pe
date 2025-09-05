@@ -1,0 +1,41 @@
+
+name: Publish artifacts to PyPi
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Installe Build Tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Install dependencies
+        run: |
+          uv sync
+
+      - name: Run tests
+        run: |
+          uv run pytest
+
+      - name: Build artifacts
+        run: |
+          uv run build
+
+      - name: Upload artifacts
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env: 
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          uv publish -t "$PYPI_TOKEN" --managed-python
