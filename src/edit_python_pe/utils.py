@@ -15,6 +15,11 @@ from platformdirs import user_data_dir
 if TYPE_CHECKING:
     from .main import MemberApp
 
+from .strings import (MD_CONTENT, MESSAGE_FILE_EDITED_PR,
+                      MESSAGE_FILE_SAVED_PR, MESSAGE_LOAD_FILE_ERROR,
+                      MESSAGE_PROMPT_FOR_GITHUB_TOKEN, MESSAGE_REPO_NOT_FOUND,
+                      MESSAGE_UNAUTHORIZED)
+
 
 def _compute_file_name(aliases: list[str], name: str, email: str) -> str:
     # compute name_file
@@ -118,20 +123,16 @@ def _get_alias(aliases: list[str], name: str) -> str:
 
 
 def get_repo() -> tuple[str, Repository]:
-    token = getpass.getpass(
-        "Por favor ingrese su access token personal de GitHub: "
-    )
+    token = getpass.getpass(MESSAGE_PROMPT_FOR_GITHUB_TOKEN)
     g = Github(token)
 
     try:
         return token, g.get_repo("pythonpe/python.pe")
     except BadCredentialsException:
-        print("Acceso no autorizado. Por favor, verifique su token de acceso.")
+        print(MESSAGE_UNAUTHORIZED)
         exit(1)
     except GithubException:
-        print(
-            "Repositorio no encontrado. Por favor, verifique su token de acceso."
-        )
+        print(MESSAGE_REPO_NOT_FOUND)
         exit(1)
 
 
@@ -203,25 +204,23 @@ def create_pr(
         if pr_found:
             # Push to the PR branch (simulate, as actual branch logic may differ)
             remote.push([repo.head.name], callbacks=callbacks)
-            return f"Archivo {name_file} editado, commit y cambios enviados al PR existente."
+            return MESSAGE_FILE_EDITED_PR.format(name_file=name_file)
         else:
-            # Otherwise, create a new PR
             original_repo.create_pull(
                 title=pr_title,
                 body=pr_body,
                 head=head_branch,
                 base=base_branch,
             )
-            return f"Archivo {name_file} guardado, commit y PR listo."
+            return MESSAGE_FILE_SAVED_PR.format(name_file=name_file)
     else:
-        # Otherwise, create a new PR
         original_repo.create_pull(
             title=pr_title,
             body=pr_body,
             head=head_branch,
             base=base_branch,
         )
-        return f"Archivo {name_file} guardado, commit y PR listo."
+        return MESSAGE_FILE_SAVED_PR.format(name_file=name_file)
 
 
 def load_file_into_form(app: "MemberApp", filename: str) -> None:
@@ -231,7 +230,9 @@ def load_file_into_form(app: "MemberApp", filename: str) -> None:
     try:
         content = _read_file(path_md)
     except Exception as e:
-        app.exit(f"Error al leer el archivo {filename}: {e}")
+        app.exit(
+            message=MESSAGE_LOAD_FILE_ERROR.format(filename=filename, error=e)
+        )
         return
 
     app.clear_form()
@@ -333,81 +334,72 @@ def build_md_content(
     availability: str,
 ) -> str:
     md_lines = [
-        "---",
-        "blogpost: true",
-        f"date: {date.today().strftime("%d %b, %Y")}",
-        f"author: {_get_alias(aliases, name)}",
-        f"location: {city}",
-        "category: members",
-        "language: Español",
-        "image: 1",
-        "excerpt: 1",
-        "---",
+        MD_CONTENT["yaml_start"],
+        MD_CONTENT["yaml_blogpost"],
+        MD_CONTENT["yaml_date"].format(
+            date=date.today().strftime("%d %b, %Y")
+        ),
+        MD_CONTENT["yaml_author"].format(author=_get_alias(aliases, name)),
+        MD_CONTENT["yaml_location"].format(city=city),
+        MD_CONTENT["yaml_category"],
+        MD_CONTENT["yaml_language"],
+        MD_CONTENT["yaml_image"],
+        MD_CONTENT["yaml_excerpt"],
+        MD_CONTENT["yaml_end"],
         "",
-        f"# {name}",
+        MD_CONTENT["header_name"].format(name=name),
         "",
-        f"```{{gravatar}} {email}",
-        "---",
-        "width: 200",
-        'class: "member-gravatar"',
-        "---",
-        "```",
+        MD_CONTENT["gravatar_block"].format(email=email),
         "",
     ]
     if socials:
-        md_lines.append("```{raw} html")
-        md_lines.append('<ul class="social-media profile">')
+        md_lines.append(MD_CONTENT["social_block_start"])
+        md_lines.append(MD_CONTENT["social_ul_start"])
         for plat, url in socials:
-            md_lines.append("    <li>")
             md_lines.append(
-                f'        <a class="external reference" href="{url}">'
+                MD_CONTENT["social_li"].format(platform=plat, url=url)
             )
-            md_lines.append(
-                f'            <iconify-icon icon="simple-icons:{plat}" style="font-size:2em"></iconify-icon>'
-            )
-            md_lines.append("        </a>")
-            md_lines.append("    </li>")
-        md_lines.append("</ul>")
-        md_lines.append("```")
+        md_lines.append(MD_CONTENT["social_ul_end"])
+        md_lines.append(MD_CONTENT["social_block_end"])
         md_lines.append("")
 
     if aliases:
-        md_lines.append(f":Aliases: {', '.join(aliases)}")
+        md_lines.append(
+            MD_CONTENT["aliases"].format(aliases=", ".join(aliases))
+        )
         md_lines.append("")
 
     if city:
-        md_lines.append(f":Ciudad: {city}")
+        md_lines.append(MD_CONTENT["city"].format(city=city))
         md_lines.append("")
 
     if homepage:
-        md_lines.append(f":Homepage: {homepage}")
+        md_lines.append(MD_CONTENT["homepage"].format(homepage=homepage))
         md_lines.append("")
 
-    md_lines.append("## Sobre mí")
+    md_lines.append(MD_CONTENT["section_about"])
     md_lines.append("")
 
     if who:
-        md_lines.append("### ¿Quién eres y a qué te dedicas?")
+        md_lines.append(MD_CONTENT["section_who"])
         md_lines.append("")
         md_lines.append(who)
         md_lines.append("")
 
     if python_:
-        md_lines.append("### ¿Cómo programas en Python?")
+        md_lines.append(MD_CONTENT["section_python"])
         md_lines.append("")
         md_lines.append(python_)
         md_lines.append("")
 
     if contributions:
-        md_lines.append("### ¿Tienes algún aporte a la comunidad de Python?")
+        md_lines.append(MD_CONTENT["section_contrib"])
         md_lines.append("")
         md_lines.append(contributions)
         md_lines.append("")
 
     if availability:
-        md_lines.append(
-            "### ¿Estás disponible para hacer mentoring, consultorías, charlas?"
-        )
+        md_lines.append(MD_CONTENT["section_avail"])
         md_lines.append("")
         md_lines.append(availability)
         md_lines.append("")
