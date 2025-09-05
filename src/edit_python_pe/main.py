@@ -8,6 +8,14 @@ from textual.events import Event
 from textual.widgets import (Button, Input, ListItem, ListView, Select, Static,
                              TextArea)
 
+from .strings import (BUTTON_ADD, BUTTON_ADD_ALIAS, BUTTON_ADD_SOCIAL,
+                      BUTTON_BACK, BUTTON_DELETE, BUTTON_QUIT, BUTTON_SAVE,
+                      FORM_HEADER, LIST_TITLE, MESSAGE_EXIT, MESSAGE_QUIT,
+                      PLACEHOLDER_ALIAS, PLACEHOLDER_CITY, PLACEHOLDER_EMAIL,
+                      PLACEHOLDER_HOMEPAGE, PLACEHOLDER_NAME,
+                      PLACEHOLDER_SOCIAL_URL, SECTION_ALIASES, SECTION_AVAIL,
+                      SECTION_CONTRIB, SECTION_PYTHON, SECTION_SOCIAL,
+                      SECTION_WHO)
 from .utils import (build_md_content, create_pr, fork_repo, get_repo,
                     load_file_into_form)
 
@@ -38,12 +46,12 @@ class MemberApp(App):
 
     def on_mount(self) -> None:
         # 1) Build the list portion
-        self.list_title = Static("Archivos en 'blog/members':")
+        self.list_title = Static(LIST_TITLE)
         self.list_view = ListView()
-        self.quit_list_button = Button("Salir", id="quit_list")
+        self.quit_list_button = Button(BUTTON_QUIT, id="quit_list")
 
         self.list_container.mount(self.list_title)
-        self.add_list_button = Button("Añadir", id="add_list")
+        self.add_list_button = Button(BUTTON_ADD, id="add_list")
         self.list_container.mount(self.list_view)
         self.list_container.mount(self.add_list_button)
         self.list_container.mount(self.quit_list_button)
@@ -56,11 +64,11 @@ class MemberApp(App):
             self.list_view.append(ListItem(Static(basename)))
 
         # 2) Build the form portion, hidden at first
-        self.form_header = Static("Formulario de Miembro", classes="header")
-        self.name_input = Input(placeholder="Nombre")
-        self.email_input = Input(placeholder="Correo electrónico")
-        self.city_input = Input(placeholder="Ciudad")
-        self.homepage_input = Input(placeholder="Página personal")
+        self.form_header = Static(FORM_HEADER, classes="header")
+        self.name_input = Input(placeholder=PLACEHOLDER_NAME)
+        self.email_input = Input(placeholder=PLACEHOLDER_EMAIL)
+        self.city_input = Input(placeholder=PLACEHOLDER_CITY)
+        self.homepage_input = Input(placeholder=PLACEHOLDER_HOMEPAGE)
 
         self.who_area = TextArea()
         self.python_area = TextArea()
@@ -69,48 +77,42 @@ class MemberApp(App):
 
         self.social_container = Vertical()
         self.alias_container = Vertical()
-        self.add_social_button = Button("Agregar Red Social", id="add_social")
-        self.add_alias_button = Button("Agregar Alias", id="add_alias")
+        self.add_social_button = Button(BUTTON_ADD_SOCIAL, id="add_social")
+        self.add_alias_button = Button(BUTTON_ADD_ALIAS, id="add_alias")
 
-        self.save_button = Button("Guardar", id="save")
-        self.back_button = Button("Atrás", id="back")
-        self.quit_button = Button("Salir", id="quit")
+        self.save_button = Button(BUTTON_SAVE, id="save")
+        self.back_button = Button(BUTTON_BACK, id="back")
+        self.quit_button = Button(BUTTON_QUIT, id="quit")
 
         # 3) Mount them in the form container
         self.form_container.mount(self.form_header)
         self.form_container.mount(self.name_input)
         self.form_container.mount(self.email_input)
 
-        self.form_container.mount(
-            Static("Redes Sociales", classes="subheader")
-        )
+        self.form_container.mount(Static(SECTION_SOCIAL, classes="subheader"))
         self.form_container.mount(self.social_container)
         self.form_container.mount(self.add_social_button)
 
-        self.form_container.mount(Static("Aliases", classes="subheader"))
+        self.form_container.mount(Static(SECTION_ALIASES, classes="subheader"))
         self.form_container.mount(self.alias_container)
         self.form_container.mount(self.add_alias_button)
 
         self.form_container.mount(self.city_input)
         self.form_container.mount(self.homepage_input)
-        self.form_container.mount(
-            Static("¿Quién eres y a qué te dedicas?", classes="subheader")
-        )
+        self.form_container.mount(Static(SECTION_WHO, classes="subheader"))
         self.form_container.mount(self.who_area)
-        self.form_container.mount(
-            Static("¿Cómo programas en Python?", classes="subheader")
-        )
+        self.form_container.mount(Static(SECTION_PYTHON, classes="subheader"))
         self.form_container.mount(self.python_area)
         self.form_container.mount(
             Static(
-                "¿Tienes algún aporte a la comunidad de Python?",
+                SECTION_CONTRIB,
                 classes="subheader",
             )
         )
         self.form_container.mount(self.contributions_area)
         self.form_container.mount(
             Static(
-                "¿Estás disponible para hacer mentoring, consultorías, charlas?",
+                SECTION_AVAIL,
                 classes="subheader",
             )
         )
@@ -177,7 +179,7 @@ class MemberApp(App):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         bid = event.button.id
         if bid == "quit_list":
-            self.exit("¡Hasta la próxima!")
+            self.exit(message=MESSAGE_EXIT)
         elif bid == "add_social":
             self.add_social_entry()
         elif bid == "add_alias":
@@ -193,7 +195,7 @@ class MemberApp(App):
             self.clear_form()
             self.show_list()
         elif bid == "quit":
-            self.exit("Saliendo de la aplicación.")
+            self.exit(MESSAGE_QUIT)
         elif bid and bid.startswith("delete_social_"):
             index = int(bid.replace("delete_social_", ""))
             self.remove_social_entry(index)
@@ -205,13 +207,13 @@ class MemberApp(App):
         class SocialEntry(Horizontal):
             DEFAULT_CSS = """
                 SocialEntry Select {
-                   width: 25%; 
+                   width: 25%;
                 }
                 SocialEntry Input {
-                   width: 50%; 
+                   width: 50%;
                 }
                 SocialEntry Button {
-                   width: 25%; 
+                   width: 25%;
                 }
             """
 
@@ -229,10 +231,12 @@ class MemberApp(App):
                         ("X", "x"),
                         ("YouTube", "youtube"),
                     ],
-                    prompt="Red Social",
+                    prompt="Social Network",
                 )
-                se.url_input = Input(placeholder="URL de la red social")
-                se.delete_btn = Button("Eliminar", id=f"delete_social_{index}")
+                se.url_input = Input(placeholder=PLACEHOLDER_SOCIAL_URL)
+                se.delete_btn = Button(
+                    BUTTON_DELETE, id=f"delete_social_{index}"
+                )
 
             def compose(se) -> ComposeResult:
                 yield se.select
@@ -258,18 +262,20 @@ class MemberApp(App):
         class AliasEntry(Horizontal):
             DEFAULT_CSS = """
                 AliasEntry Input {
-                   width: 75%; 
+                   width: 75%;
                 }
                 AliasEntry Button {
-                   width: 25%; 
+                   width: 25%;
                 }
             """
 
             def __init__(se, index):
                 super().__init__()
                 se.index = index
-                se.alias_input = Input(placeholder="Alias")
-                se.delete_btn = Button("Eliminar", id=f"delete_alias_{index}")
+                se.alias_input = Input(placeholder=PLACEHOLDER_ALIAS)
+                se.delete_btn = Button(
+                    BUTTON_DELETE, id=f"delete_alias_{index}"
+                )
 
             def compose(se) -> ComposeResult:
                 yield se.alias_input
