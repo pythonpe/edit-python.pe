@@ -36,6 +36,8 @@ def main() -> None:
     subprocess.run(["git", "add", "uv.lock"])
     subprocess.run(["git", "add", "pyproject.toml"])
     subprocess.run(["git", "commit", "-m", f"bump version to {version}"])
+    subprocess.run(["git", "tag", f"v{version}"])
+    subprocess.run(["git", "push", "--tags"])
 
 
 if __name__ == "__main__":
