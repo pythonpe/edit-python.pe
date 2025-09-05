@@ -1,6 +1,6 @@
 [project]
 name = "edit-python-pe"
-version = "0.2.2"
+version = "0.2.3"
 description = "Allows member and project profile editing onto python.pe git repository"
 readme = "README.md"
 authors = [
@@ -54,6 +54,7 @@ dev = [
     "deep-translator>=1.11.4",
     "isort>=6.0.1",
     "polib>=1.2.0",
+    "pre-commit>=4.3.0",
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
     "textual-dev==1.7.0",

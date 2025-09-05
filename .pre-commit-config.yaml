@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: testing
+        name: Testing
+        description: Running tests for the app
+        language: python
+        entry: ./bin/test.sh
+
+default_stages: [pre-commit, pre-push]
