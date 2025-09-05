@@ -1,27 +1,18 @@
 [project]
 name = "edit-python-pe"
-version = "0.2.1"
+version = "0.2.2"
 description = "Allows member and project profile editing onto python.pe git repository"
 readme = "README.md"
-license = { file = "LICENSE" }
 authors = [
-    { name = "Jean-Pierre Chauvel", email = "jean.p.chauvel@gmail.com" }
+    { name = "Jean-Pierre Chauvel", email = "jean.p.chauvel@gmail.com" },
 ]
 requires-python = ">=3.13"
 classifiers = [
-  # How mature is this project? Common values are
-  #   3 - Alpha
-  #   4 - Beta
-  #   5 - Production/Stable
-  "Development Status :: 4 - Beta",
-
-  # Indicate who your project is intended for
-  "Intended Audience :: Developers",
-  "Topic :: Documentation :: Sphinx",
-
-  # Specify the Python versions you support here.
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.13",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Documentation :: Sphinx",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
 ]
 module = "edit_python_pe"
 dependencies = [
@@ -33,6 +24,9 @@ dependencies = [
     "babel==2.17.0",
 ]
 
+[project.license]
+file = "LICENSE"
+
 [project.urls]
 Homepage = "http://github.com/pythonpe/edit-python.pe"
 Documentation = "https://github.com/pythonpe/edit-python.pe/blob/main/README.md"
@@ -43,11 +37,16 @@ Issues = "https://github.com/pythonpe/edit-python.pe/issues"
 edit-python-pe = "edit_python_pe.main:main"
 
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling",
+]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
 path = "src/edit_python_pe/__about__.py"
+
+[tool.black]
+line-length = 79
 
 [dependency-groups]
 dev = [
@@ -58,7 +57,5 @@ dev = [
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
     "textual-dev==1.7.0",
+    "tomli-w>=1.2.0",
 ]
-
-[tool.black]
-line-length = 79
