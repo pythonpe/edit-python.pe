@@ -271,9 +271,8 @@ def load_file_into_form(app: "MemberApp", filename: str) -> None:
         for match in social_link_pattern.finditer(social_html):
             url = match.group(1)
             platform = match.group(2)
-            app.add_social_entry()
+            app.add_social_entry(platform)
             last_entry = app.social_entries[-1]
-            last_entry.select.value = platform
             last_entry.url_input.value = url
 
     # Extract aliases, city, homepage from colon-prefixed lines

@@ -5,6 +5,7 @@ from github.Repository import Repository
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.events import Event
+from textual.types import NoSelection
 from textual.widgets import (Button, Input, ListItem, ListView, Select, Static,
                              TextArea)
 
@@ -21,6 +22,66 @@ from .strings import (BUTTON_ADD, BUTTON_ADD_ALIAS, BUTTON_ADD_SOCIAL,
                       SECTION_PYTHON, SECTION_SOCIAL, SECTION_WHO)
 from .utils import (build_md_content, create_pr, fork_repo, get_repo,
                     load_file_into_form)
+
+
+class SocialEntry(Horizontal):
+    DEFAULT_CSS = """
+        SocialEntry Select {
+            width: 25%;
+        }
+        SocialEntry Input {
+            width: 50%;
+        }
+        SocialEntry Button {
+            width: 25%;
+        }
+    """
+
+    def __init__(self, index: int, value: str) -> None:
+        super().__init__()
+        self.index = index
+        self.select = Select(
+            options=[
+                GITHUB_OPTION,
+                GITLAB_OPTION,
+                BITBUCKET_OPTION,
+                LINKEDIN_OPTION,
+                FACEBOOK_OPTION,
+                INSTAGRAM_OPTION,
+                X_OPTION,
+                YOUTUBE_OPTION,
+            ],
+            prompt=PROMPT_SOCIAL_NETWORK,
+            value=value,
+        )
+        self.url_input = Input(placeholder=PLACEHOLDER_SOCIAL_URL)
+        self.delete_btn = Button(BUTTON_DELETE, id=f"delete_social_{index}")
+
+    def compose(self) -> ComposeResult:
+        yield self.select
+        yield self.url_input
+        yield self.delete_btn
+
+
+class AliasEntry(Horizontal):
+    DEFAULT_CSS = """
+        AliasEntry Input {
+            width: 75%;
+        }
+        AliasEntry Button {
+            width: 25%;
+        }
+    """
+
+    def __init__(self, index: int) -> None:
+        super().__init__()
+        self.index = index
+        self.alias_input = Input(placeholder=PLACEHOLDER_ALIAS)
+        self.delete_btn = Button(BUTTON_DELETE, id=f"delete_alias_{index}")
+
+    def compose(self) -> ComposeResult:
+        yield self.alias_input
+        yield self.delete_btn
 
 
 class MemberApp(App):
@@ -129,8 +190,8 @@ class MemberApp(App):
         self.form_container.display = False
 
         # Some data structures
-        self.social_entries = []
-        self.alias_entries = []
+        self.social_entries: list[SocialEntry] = []
+        self.alias_entries: list[AliasEntry] = []
         self.social_index = 0
         self.alias_index = 0
         self.current_file = None
@@ -206,47 +267,10 @@ class MemberApp(App):
             index = int(bid.replace("delete_alias_", ""))
             self.remove_alias_entry(index)
 
-    def add_social_entry(self) -> None:
-        class SocialEntry(Horizontal):
-            DEFAULT_CSS = """
-                SocialEntry Select {
-                   width: 25%;
-                }
-                SocialEntry Input {
-                   width: 50%;
-                }
-                SocialEntry Button {
-                   width: 25%;
-                }
-            """
-
-            def __init__(se, index):
-                super().__init__()
-                se.index = index
-                se.select = Select(
-                    options=[
-                        GITHUB_OPTION,
-                        GITLAB_OPTION,
-                        BITBUCKET_OPTION,
-                        LINKEDIN_OPTION,
-                        FACEBOOK_OPTION,
-                        INSTAGRAM_OPTION,
-                        X_OPTION,
-                        YOUTUBE_OPTION,
-                    ],
-                    prompt=PROMPT_SOCIAL_NETWORK,
-                )
-                se.url_input = Input(placeholder=PLACEHOLDER_SOCIAL_URL)
-                se.delete_btn = Button(
-                    BUTTON_DELETE, id=f"delete_social_{index}"
-                )
-
-            def compose(se) -> ComposeResult:
-                yield se.select
-                yield se.url_input
-                yield se.delete_btn
-
-        new_entry = SocialEntry(self.social_index)
+    def add_social_entry(
+        self, value: str | NoSelection = Select.BLANK
+    ) -> None:
+        new_entry = SocialEntry(self.social_index, value)
         self.social_index += 1
         self.social_entries.append(new_entry)
         self.social_container.mount(new_entry)
@@ -262,28 +286,6 @@ class MemberApp(App):
             found.remove()
 
     def add_alias_entry(self) -> None:
-        class AliasEntry(Horizontal):
-            DEFAULT_CSS = """
-                AliasEntry Input {
-                   width: 75%;
-                }
-                AliasEntry Button {
-                   width: 25%;
-                }
-            """
-
-            def __init__(se, index):
-                super().__init__()
-                se.index = index
-                se.alias_input = Input(placeholder=PLACEHOLDER_ALIAS)
-                se.delete_btn = Button(
-                    BUTTON_DELETE, id=f"delete_alias_{index}"
-                )
-
-            def compose(se) -> ComposeResult:
-                yield se.alias_input
-                yield se.delete_btn
-
         row = AliasEntry(self.alias_index)
         self.alias_index += 1
         self.alias_entries.append(row)
