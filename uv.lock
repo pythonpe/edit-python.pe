@@ -1068,7 +1068,7 @@ upload-time = "2025-07-17T16:51:58.613Z"
 
 [[package]]
 name = "edit-python-pe"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
     { name = "babel" },
     { name = "platformdirs" },
