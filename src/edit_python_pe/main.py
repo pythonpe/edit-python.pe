@@ -55,7 +55,9 @@ class SocialEntry(Horizontal):
             value=value,
         )
         self.url_input = Input(placeholder=PLACEHOLDER_SOCIAL_URL)
+        self.url_input.tooltip = "Enter the full social media URL (e.g., https://github.com/username)"
         self.delete_btn = Button(BUTTON_DELETE, id=f"delete_social_{index}")
+        self.delete_btn.tooltip = "Delete this social link"
 
     def compose(self) -> ComposeResult:
         yield self.select
@@ -77,7 +79,9 @@ class AliasEntry(Horizontal):
         super().__init__()
         self.index = index
         self.alias_input = Input(placeholder=PLACEHOLDER_ALIAS)
+        self.alias_input.tooltip = "Enter an alias or nickname for this member"
         self.delete_btn = Button(BUTTON_DELETE, id=f"delete_alias_{index}")
+        self.delete_btn.tooltip = "Delete this alias entry"
 
     def compose(self) -> ComposeResult:
         yield self.alias_input
@@ -112,10 +116,12 @@ class MemberApp(App):
         # 1) Build the list portion
         self.list_title = Static(LIST_TITLE)
         self.list_view = ListView()
+        self.list_view.tooltip = "Select a member file to edit or view details"
         self.quit_list_button = Button(BUTTON_QUIT, id="quit_list")
 
         self.list_container.mount(self.list_title)
         self.add_list_button = Button(BUTTON_ADD, id="add_list")
+        self.add_list_button.tooltip = "Create a new member profile"
         self.list_container.mount(self.list_view)
         self.list_container.mount(self.add_list_button)
         self.list_container.mount(self.quit_list_button)
@@ -129,24 +135,47 @@ class MemberApp(App):
 
         # 2) Build the form portion, hidden at first
         self.form_header = Static(FORM_HEADER, classes="header")
+
         self.name_input = Input(placeholder=PLACEHOLDER_NAME)
+        self.name_input.tooltip = "Enter the member's full name"
+
         self.email_input = Input(placeholder=PLACEHOLDER_EMAIL)
+        self.email_input.tooltip = "Enter the contact email address"
+
         self.city_input = Input(placeholder=PLACEHOLDER_CITY)
+        self.city_input.tooltip = "Enter the city or location"
+
         self.homepage_input = Input(placeholder=PLACEHOLDER_HOMEPAGE)
+        self.homepage_input.tooltip = "Enter the member's personal website (optional)"
 
         self.who_area = TextArea()
+        self.who_area.tooltip = "Describe who this member is (short bio)"
+
         self.python_area = TextArea()
+        self.python_area.tooltip = "Describe their experience with Python"
+
         self.contributions_area = TextArea()
+        self.contributions_area.tooltip = "List their contributions or achievements"
+
         self.availability_area = TextArea()
+        self.availability_area.tooltip = "Mention when they are available (e.g., weekends)"
 
         self.social_container = Vertical()
         self.alias_container = Vertical()
         self.add_social_button = Button(BUTTON_ADD_SOCIAL, id="add_social")
+        self.add_social_button.tooltip = "Add a new social link"
+
         self.add_alias_button = Button(BUTTON_ADD_ALIAS, id="add_alias")
+        self.add_alias_button.tooltip = "Add a new alias"
 
         self.save_button = Button(BUTTON_SAVE, id="save")
+        self.save_button.tooltip = "Save this member's profile"
+
         self.back_button = Button(BUTTON_BACK, id="back")
+        self.back_button.tooltip = "Go back to the members list without saving"
+
         self.quit_button = Button(BUTTON_QUIT, id="quit")
+        self.quit_button.tooltip = "Exit the app"
 
         # 3) Mount them in the form container
         self.form_container.mount(self.form_header)
