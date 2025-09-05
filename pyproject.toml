@@ -52,7 +52,9 @@ path = "src/edit_python_pe/__about__.py"
 [dependency-groups]
 dev = [
     "black>=25.1.0",
+    "deep-translator>=1.11.4",
     "isort>=6.0.1",
+    "polib>=1.2.0",
     "pytest>=8.4.1",
     "textual-dev==1.7.0",
 ]

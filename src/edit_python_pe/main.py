@@ -8,14 +8,17 @@ from textual.events import Event
 from textual.widgets import (Button, Input, ListItem, ListView, Select, Static,
                              TextArea)
 
+from .constants import (BITBUCKET_OPTION, FACEBOOK_OPTION, GITHUB_OPTION,
+                        GITLAB_OPTION, INSTAGRAM_OPTION, LINKEDIN_OPTION,
+                        X_OPTION, YOUTUBE_OPTION)
 from .strings import (BUTTON_ADD, BUTTON_ADD_ALIAS, BUTTON_ADD_SOCIAL,
                       BUTTON_BACK, BUTTON_DELETE, BUTTON_QUIT, BUTTON_SAVE,
-                      FORM_HEADER, LIST_TITLE, MESSAGE_EXIT, MESSAGE_QUIT,
-                      PLACEHOLDER_ALIAS, PLACEHOLDER_CITY, PLACEHOLDER_EMAIL,
+                      FORM_HEADER, LIST_TITLE, MESSAGE_EXIT, PLACEHOLDER_ALIAS,
+                      PLACEHOLDER_CITY, PLACEHOLDER_EMAIL,
                       PLACEHOLDER_HOMEPAGE, PLACEHOLDER_NAME,
-                      PLACEHOLDER_SOCIAL_URL, SECTION_ALIASES, SECTION_AVAIL,
-                      SECTION_CONTRIB, SECTION_PYTHON, SECTION_SOCIAL,
-                      SECTION_WHO)
+                      PLACEHOLDER_SOCIAL_URL, PROMPT_SOCIAL_NETWORK,
+                      SECTION_ALIASES, SECTION_AVAIL, SECTION_CONTRIB,
+                      SECTION_PYTHON, SECTION_SOCIAL, SECTION_WHO)
 from .utils import (build_md_content, create_pr, fork_repo, get_repo,
                     load_file_into_form)
 
@@ -195,7 +198,7 @@ class MemberApp(App):
             self.clear_form()
             self.show_list()
         elif bid == "quit":
-            self.exit(MESSAGE_QUIT)
+            self.exit(message=MESSAGE_EXIT)
         elif bid and bid.startswith("delete_social_"):
             index = int(bid.replace("delete_social_", ""))
             self.remove_social_entry(index)
@@ -222,16 +225,16 @@ class MemberApp(App):
                 se.index = index
                 se.select = Select(
                     options=[
-                        ("GitHub", "github"),
-                        ("GitLab", "gitlab"),
-                        ("Bitbucket", "bitbucket"),
-                        ("LinkedIn", "linkedin"),
-                        ("Facebook", "facebook"),
-                        ("Instagram", "instagram"),
-                        ("X", "x"),
-                        ("YouTube", "youtube"),
+                        GITHUB_OPTION,
+                        GITLAB_OPTION,
+                        BITBUCKET_OPTION,
+                        LINKEDIN_OPTION,
+                        FACEBOOK_OPTION,
+                        INSTAGRAM_OPTION,
+                        X_OPTION,
+                        YOUTUBE_OPTION,
                     ],
-                    prompt="Social Network",
+                    prompt=PROMPT_SOCIAL_NETWORK,
                 )
                 se.url_input = Input(placeholder=PLACEHOLDER_SOCIAL_URL)
                 se.delete_btn = Button(
