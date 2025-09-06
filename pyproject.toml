@@ -1,6 +1,6 @@
 [project]
 name = "edit-python-pe"
-version = "0.2.5"
+version = "0.2.6"
 description = "Allows member and project profile editing onto python.pe git repository"
 readme = "README.md"
 authors = [
