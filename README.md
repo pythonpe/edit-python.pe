@@ -37,4 +37,4 @@ uvx edit-python-pe
 ## Contribute
 
 Read the [Developer
-Guide](https://github.com/python.pe/edit-python.pe/blob/main/CONTRIBUTING.md)
+Guide](https://github.com/python.pe/edit-python.pe/CONTRIBUTING.md)
