@@ -2,19 +2,17 @@
 
 ## *Textual Tool for Creating Member Profiles for python.pe*
 
-## **QUICK START**
+This tutorial will guide you step-by-step to create your profile on python.pe
+quickly and securely.
 
-> This tutorial will guide you step-by-step to create your profile on python.pe
-> quickly and securely.
-
-### **PREREQUISITES**
+## Prerequisites
 
 ```bash
 # Check required versions
 uv --version # >= 0.8.11
 ```
 
-## **INSTALLING edit-python.pe**
+## Installing edit-python.pe
 
 ### Installing dependencies
 
@@ -35,3 +33,8 @@ uv sync
 uvx edit-python-pe  
 # Next you'll be prompted for your access token
 ```
+
+## Contribute
+
+Read the [Developer
+Guide](https://github.com/python.pe/edit-python.pe/blob/main/CONTRIBUTING.md)

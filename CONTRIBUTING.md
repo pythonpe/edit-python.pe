@@ -28,13 +28,19 @@ uv run pre-commit install
 ./test/test.sh
 ```
 
-8. Commit your changes, if the pre-commit hook fails, run `./bin/test.sh` to
+10. Run the auto-translations:
+
+```bash
+./bin/translate.sh
+```
+
+11. Commit your changes, if the pre-commit hook fails, run `./bin/test.sh` to
    know which test failed.
-9. If the last step was your last commit on this issue, run this command:
+12. If the last step was your last commit on this issue, run this command:
 
 ```bash
 uv run ./bin/bump-version.sh
 ```
 
-10. Push your changes to the forked repository.
-11. Open a pull request on [GitHub](https://github.com/python.pe/edit-python.pe/pulls).
+13. Push your changes to the forked repository.
+14. Open a pull request on [GitHub](https://github.com/python.pe/edit-python.pe/pulls).
