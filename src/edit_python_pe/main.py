@@ -233,7 +233,7 @@ class MemberApp(App):
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         """User clicked on a file in the list. Parse it into the form fields."""
         item_text_widget = event.item.children[0]
-        filename = item_text_widget.renderable
+        filename = item_text_widget.content
         self.current_file = filename
 
         self.clear_form()
