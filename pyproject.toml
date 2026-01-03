@@ -16,7 +16,7 @@ classifiers = [
 ]
 module = "edit_python_pe"
 dependencies = [
-    "pygit2==1.18.2",
+    "pygit2==1.19.1",
     "textual==6.1.0",
     "pygithub==2.8.1",
     "pyyaml==6.0.2",
