@@ -21,7 +21,7 @@ dependencies = [
     "pygithub==2.8.1",
     "pyyaml==6.0.2",
     "platformdirs==4.4.0",
-    "babel==2.17.0",
+    "babel==2.18.0",
 ]
 
 [project.license]
