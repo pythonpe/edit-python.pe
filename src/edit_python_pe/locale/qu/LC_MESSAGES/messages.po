@@ -1,0 +1,280 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-05-23 14:12-0500\n"
+"PO-Revision-Date: 2025-09-05 02:05-0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: qu\n"
+"Language-Team: qu <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: src/edit_python_pe/github_client.py:29
+msgid "Unauthorized access. Please check your access token."
+msgstr "Mana kamachisqa yaykuy. Ama hina kaspa, yaykuy token nisqaykitaqa qhaway."
+
+#: src/edit_python_pe/github_client.py:33
+msgid "Repository not found. Please check your access token."
+msgstr ""
+"Waqaychasqa mana tarisqachu. Ama hina kaspa, yaykuy token nisqaykitaqa "
+"qhaway."
+
+#: src/edit_python_pe/github_client.py:141
+#, python-brace-format
+msgid ""
+"Woohoo! Changes to {name_file} were successfully sent to your existing "
+"PR! 🎉"
+msgstr ""
+"¡Kusikuy! {name_file} nisqaman tikraykunaqa allinllam apachisqa karqan "
+"kunan kaq PR nisqaman! 🎉"
+
+#: src/edit_python_pe/github_client.py:156
+#: src/edit_python_pe/github_client.py:171
+#, python-brace-format
+msgid "Woohoo! {name_file} was saved successfully and your new PR is ready! 🎉"
+msgstr ""
+"¡Kusikuy! ¡{name_file} allin waqaychasqa karqan musuq PR nisqaykipas "
+"wakichisqaña! 🎉"
+
+#: src/edit_python_pe/markdown_builder.py:71
+#, python-brace-format
+msgid "Error reading file {filename}"
+msgstr "{filename} willañiqita ñawiriypi pantasqa."
+
+#: src/edit_python_pe/components/alias_entry.py:11
+msgid "Alias"
+msgstr "Alias ​​sutiyuq"
+
+#: src/edit_python_pe/components/alias_entry.py:13
+#: src/edit_python_pe/components/social_entry.py:38
+msgid "Delete"
+msgstr "Chinkachiy"
+
+#: src/edit_python_pe/components/layout.py:9
+#: src/edit_python_pe/screens/language.py:71
+msgid "Welcome aboard to Python Perú"
+msgstr "Allin hamuy abordo Python Perú llaqtaman"
+
+#: src/edit_python_pe/components/layout.py:18
+#: src/edit_python_pe/screens/language.py:75
+msgid "Proudly built with ❤️ in Perú"
+msgstr "Kusikuywan ❤️ Piruwpi ruwasqa"
+
+#: src/edit_python_pe/components/social_entry.py:33
+msgid "Social Network"
+msgstr "Red Social nisqa"
+
+#: src/edit_python_pe/components/social_entry.py:36
+msgid "Social network URL"
+msgstr "Red social nisqap URL nisqa"
+
+#: src/edit_python_pe/screens/auth.py:21
+msgid "Please enter your GitHub personal access token: "
+msgstr "Ama hina kaspa, GitHub sapalla yaykuy tokenniykiman qillqay:"
+
+#: src/edit_python_pe/screens/auth.py:25
+msgid "Login"
+msgstr "Yaykuy"
+
+#: src/edit_python_pe/screens/auth.py:27
+#: src/edit_python_pe/screens/loading.py:41
+#: src/edit_python_pe/screens/member_list.py:29
+#: src/edit_python_pe/screens/save_loading.py:56
+msgid "Back"
+msgstr "Qipaman"
+
+#: src/edit_python_pe/screens/auth.py:28
+#: src/edit_python_pe/screens/dashboard.py:23
+#: src/edit_python_pe/screens/language.py:56
+#: src/edit_python_pe/screens/language.py:74
+#: src/edit_python_pe/screens/loading.py:42
+#: src/edit_python_pe/screens/member_form.py:134
+#: src/edit_python_pe/screens/member_list.py:30
+#: src/edit_python_pe/screens/save_loading.py:59
+msgid "Quit"
+msgstr "Lluqsiy"
+
+#: src/edit_python_pe/screens/dashboard.py:21
+msgid "Add New Member"
+msgstr "Musuq Miembrota Yapay"
+
+#: src/edit_python_pe/screens/dashboard.py:22
+msgid "Edit Existing Member"
+msgstr "Kunan Kaq Miembrota Llamk'apuy"
+
+#: src/edit_python_pe/screens/dashboard.py:37
+msgid "See you next time!"
+msgstr "¡Qhipa kutipi tupanakusun!"
+
+#: src/edit_python_pe/screens/language.py:49
+#: src/edit_python_pe/screens/language.py:72
+msgid "Select your language"
+msgstr "Simiykita akllay"
+
+#: src/edit_python_pe/screens/language.py:55
+#: src/edit_python_pe/screens/language.py:73
+msgid "Continue"
+msgstr "Qatiq"
+
+#: src/edit_python_pe/screens/loading.py:32
+msgid "Authenticating and fetching repository..."
+msgstr "Autenticaspa waqaychasqata maskhaspa..."
+
+#: src/edit_python_pe/screens/loading.py:78
+msgid ""
+"An unexpected error occurred while loading. Please try again or contact "
+"support."
+msgstr ""
+"Cargaspa mana suyasqa pantaymi rikurimun. Ama hina kaspa, wakmanta "
+"ruway utaq yanapakuyta maskhay."
+
+#: src/edit_python_pe/screens/loading.py:95
+msgid "Successfully authenticated!"
+msgstr "¡Allinllam autenticasqa!"
+
+#: src/edit_python_pe/screens/member_form.py:32
+msgid "Are you sure you want to discard your changes?"
+msgstr "¿Kusikunkichu tikrasqaykikunata wikapayta munanki?"
+
+#: src/edit_python_pe/screens/member_form.py:37
+#: src/edit_python_pe/screens/quit_confirm.py:18
+msgid "Cancel"
+msgstr "Sayachiy"
+
+#: src/edit_python_pe/screens/member_form.py:42
+#: src/edit_python_pe/screens/member_form.py:133
+msgid "Discard"
+msgstr "Wikapay"
+
+#: src/edit_python_pe/screens/member_form.py:73
+msgid "Name"
+msgstr "Suti"
+
+#: src/edit_python_pe/screens/member_form.py:74
+msgid "Name:"
+msgstr "Suti:"
+
+#: src/edit_python_pe/screens/member_form.py:78
+msgid "Email"
+msgstr "Correo electrónico nisqa"
+
+#: src/edit_python_pe/screens/member_form.py:79
+msgid "Email:"
+msgstr "Correo electrónico:"
+
+#: src/edit_python_pe/screens/member_form.py:84
+msgid "Social Networks"
+msgstr "Redes Sociales nisqa"
+
+#: src/edit_python_pe/screens/member_form.py:87
+msgid "Add Social Network"
+msgstr "Red Social nisqapi yapay"
+
+#: src/edit_python_pe/screens/member_form.py:93
+msgid "Aliases"
+msgstr "Alias ​​nisqakuna"
+
+#: src/edit_python_pe/screens/member_form.py:95
+msgid "Add Alias"
+msgstr "Alias ​​nisqatapas yapay"
+
+#: src/edit_python_pe/screens/member_form.py:98
+msgid "City"
+msgstr "Llaqta"
+
+#: src/edit_python_pe/screens/member_form.py:99
+msgid "City:"
+msgstr "Llaqta:"
+
+#: src/edit_python_pe/screens/member_form.py:103
+msgid "Homepage"
+msgstr "Qallariy p’anqa"
+
+#: src/edit_python_pe/screens/member_form.py:104
+msgid "Homepage:"
+msgstr "Qallariy p'anqa:"
+
+#: src/edit_python_pe/screens/member_form.py:110
+msgid "Who are you and what do you do?"
+msgstr "¿Pitaq kanki, imatataq ruwanki?"
+
+#: src/edit_python_pe/screens/member_form.py:115
+msgid "How do you program in Python?"
+msgstr "¿Imaynatataq Python nisqapi programanki?"
+
+#: src/edit_python_pe/screens/member_form.py:120
+msgid "Do you have any contributions to the Python community?"
+msgstr "¿Ima yanapakuyniykipas kanchu Python aylluman?"
+
+#: src/edit_python_pe/screens/member_form.py:125
+msgid "Are you available for mentoring, consulting, talks?"
+msgstr "¿Qanchu kashanki mentoría, consultoría, rimaykunapaq?"
+
+#: src/edit_python_pe/screens/member_form.py:131
+msgid "Save"
+msgstr "Waqaychay"
+
+#: src/edit_python_pe/screens/member_form.py:232
+msgid "Name is required."
+msgstr "Sutitaqa mañakunmi."
+
+#: src/edit_python_pe/screens/member_form.py:235
+msgid "Email is required."
+msgstr "Correo electronicotaqa mañakunmi."
+
+#: src/edit_python_pe/screens/member_form.py:238
+msgid "Invalid email format."
+msgstr "Mana allin correo electronico formato."
+
+#: src/edit_python_pe/screens/member_form.py:249
+msgid "Invalid homepage URL format."
+msgstr "Mana allin qallariy p'anqap URL formaton."
+
+#: src/edit_python_pe/screens/member_form.py:259
+msgid "Both platform and URL must be provided if either is set."
+msgstr "Plataformatawan URLtawanmi quna, mayqinpas churasqa kaptinqa."
+
+#: src/edit_python_pe/screens/member_form.py:263
+msgid "Invalid URL format for social network."
+msgstr "Mana allin URL formato red social nisqapaq."
+
+#: src/edit_python_pe/screens/member_list.py:23
+msgid "Select a member to edit:"
+msgstr "Huk miembrota akllay llamk'apunapaq:"
+
+#: src/edit_python_pe/screens/member_list.py:27
+msgid "Edit"
+msgstr "Llamk'apuy"
+
+#: src/edit_python_pe/screens/quit_confirm.py:13
+msgid "Are you sure you want to close the app?"
+msgstr "¿Kusikunkichu appta wichqayta munanki?"
+
+#: src/edit_python_pe/screens/quit_confirm.py:23
+msgid "Close"
+msgstr "Wichqay"
+
+#: src/edit_python_pe/screens/save_loading.py:48
+msgid "Saving changes and creating PR..."
+msgstr "Tikraykunata waqaychaspa PR nisqa ruwaspa..."
+
+#: src/edit_python_pe/screens/save_loading.py:57
+msgid "Open PR"
+msgstr "Kichay PR"
+
+#: src/edit_python_pe/screens/save_loading.py:58
+msgid "Copy URL"
+msgstr "URL nisqa copiy"
+
+#: src/edit_python_pe/screens/save_loading.py:99
+msgid "An error occurred while saving. Please try again."
+msgstr "Waqaychaspa pantaymi karqan. Ama hina kaspa, wakmanta ruway."
+
+#: src/edit_python_pe/screens/save_loading.py:169
+msgid "URL copied to clipboard!"
+msgstr "¡URL nisqa portapapeles nisqaman copiasqa!"

@@ -1,0 +1,276 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-05-23 14:12-0500\n"
+"PO-Revision-Date: 2025-09-05 02:05-0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: src/edit_python_pe/github_client.py:29
+msgid "Unauthorized access. Please check your access token."
+msgstr "Acceso no autorizado. Por favor verifique su token de acceso."
+
+#: src/edit_python_pe/github_client.py:33
+msgid "Repository not found. Please check your access token."
+msgstr "Repositorio no encontrado. Por favor verifique su token de acceso."
+
+#: src/edit_python_pe/github_client.py:141
+#, python-brace-format
+msgid ""
+"Woohoo! Changes to {name_file} were successfully sent to your existing "
+"PR! 🎉"
+msgstr ""
+"¡Hurra! ¡Los cambios a {name_file} se enviaron exitosamente a tu PR "
+"existente! 🎉"
+
+#: src/edit_python_pe/github_client.py:156
+#: src/edit_python_pe/github_client.py:171
+#, python-brace-format
+msgid "Woohoo! {name_file} was saved successfully and your new PR is ready! 🎉"
+msgstr "¡Hurra! ¡{name_file} se guardó exitosamente y tu nuevo PR está listo! 🎉"
+
+#: src/edit_python_pe/markdown_builder.py:71
+#, python-brace-format
+msgid "Error reading file {filename}"
+msgstr "Error al leer el archivo {filename}"
+
+#: src/edit_python_pe/components/alias_entry.py:11
+msgid "Alias"
+msgstr "Alias"
+
+#: src/edit_python_pe/components/alias_entry.py:13
+#: src/edit_python_pe/components/social_entry.py:38
+msgid "Delete"
+msgstr "Borrar"
+
+#: src/edit_python_pe/components/layout.py:9
+#: src/edit_python_pe/screens/language.py:71
+msgid "Welcome aboard to Python Perú"
+msgstr "Bienvenidos a bordo de Python Perú"
+
+#: src/edit_python_pe/components/layout.py:18
+#: src/edit_python_pe/screens/language.py:75
+msgid "Proudly built with ❤️ in Perú"
+msgstr "Orgullosamente construido con ❤️ en Perú"
+
+#: src/edit_python_pe/components/social_entry.py:33
+msgid "Social Network"
+msgstr "Red Social"
+
+#: src/edit_python_pe/components/social_entry.py:36
+msgid "Social network URL"
+msgstr "URL de la red social"
+
+#: src/edit_python_pe/screens/auth.py:21
+msgid "Please enter your GitHub personal access token: "
+msgstr "Ingrese su token de acceso personal de GitHub:"
+
+#: src/edit_python_pe/screens/auth.py:25
+msgid "Login"
+msgstr "Acceso"
+
+#: src/edit_python_pe/screens/auth.py:27
+#: src/edit_python_pe/screens/loading.py:41
+#: src/edit_python_pe/screens/member_list.py:29
+#: src/edit_python_pe/screens/save_loading.py:56
+msgid "Back"
+msgstr "Atrás"
+
+#: src/edit_python_pe/screens/auth.py:28
+#: src/edit_python_pe/screens/dashboard.py:23
+#: src/edit_python_pe/screens/language.py:56
+#: src/edit_python_pe/screens/language.py:74
+#: src/edit_python_pe/screens/loading.py:42
+#: src/edit_python_pe/screens/member_form.py:134
+#: src/edit_python_pe/screens/member_list.py:30
+#: src/edit_python_pe/screens/save_loading.py:59
+msgid "Quit"
+msgstr "Abandonar"
+
+#: src/edit_python_pe/screens/dashboard.py:21
+msgid "Add New Member"
+msgstr "Añadir Nuevo Miembro"
+
+#: src/edit_python_pe/screens/dashboard.py:22
+msgid "Edit Existing Member"
+msgstr "Editar Miembro Existente"
+
+#: src/edit_python_pe/screens/dashboard.py:37
+msgid "See you next time!"
+msgstr "¡Hasta la próxima!"
+
+#: src/edit_python_pe/screens/language.py:49
+#: src/edit_python_pe/screens/language.py:72
+msgid "Select your language"
+msgstr "Selecciona tu idioma"
+
+#: src/edit_python_pe/screens/language.py:55
+#: src/edit_python_pe/screens/language.py:73
+msgid "Continue"
+msgstr "Continuar"
+
+#: src/edit_python_pe/screens/loading.py:32
+msgid "Authenticating and fetching repository..."
+msgstr "Autenticando y obteniendo el repositorio..."
+
+#: src/edit_python_pe/screens/loading.py:78
+msgid ""
+"An unexpected error occurred while loading. Please try again or contact "
+"support."
+msgstr ""
+"Se produjo un error inesperado al cargar. Intente de nuevo o contacte al "
+"soporte."
+
+#: src/edit_python_pe/screens/loading.py:95
+msgid "Successfully authenticated!"
+msgstr "¡Autenticado con éxito!"
+
+#: src/edit_python_pe/screens/member_form.py:32
+msgid "Are you sure you want to discard your changes?"
+msgstr "¿Estás seguro de que quieres descartar tus cambios?"
+
+#: src/edit_python_pe/screens/member_form.py:37
+#: src/edit_python_pe/screens/quit_confirm.py:18
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/edit_python_pe/screens/member_form.py:42
+#: src/edit_python_pe/screens/member_form.py:133
+msgid "Discard"
+msgstr "Descartar"
+
+#: src/edit_python_pe/screens/member_form.py:73
+msgid "Name"
+msgstr "Nombre"
+
+#: src/edit_python_pe/screens/member_form.py:74
+msgid "Name:"
+msgstr "Nombre:"
+
+#: src/edit_python_pe/screens/member_form.py:78
+msgid "Email"
+msgstr "Correo electrónico"
+
+#: src/edit_python_pe/screens/member_form.py:79
+msgid "Email:"
+msgstr "Correo electrónico:"
+
+#: src/edit_python_pe/screens/member_form.py:84
+msgid "Social Networks"
+msgstr "Redes Sociales"
+
+#: src/edit_python_pe/screens/member_form.py:87
+msgid "Add Social Network"
+msgstr "Agregar red social"
+
+#: src/edit_python_pe/screens/member_form.py:93
+msgid "Aliases"
+msgstr "Alias"
+
+#: src/edit_python_pe/screens/member_form.py:95
+msgid "Add Alias"
+msgstr "Agregar alias"
+
+#: src/edit_python_pe/screens/member_form.py:98
+msgid "City"
+msgstr "Ciudad"
+
+#: src/edit_python_pe/screens/member_form.py:99
+msgid "City:"
+msgstr "Ciudad:"
+
+#: src/edit_python_pe/screens/member_form.py:103
+msgid "Homepage"
+msgstr "Página principal"
+
+#: src/edit_python_pe/screens/member_form.py:104
+msgid "Homepage:"
+msgstr "Página principal:"
+
+#: src/edit_python_pe/screens/member_form.py:110
+msgid "Who are you and what do you do?"
+msgstr "¿Quién eres y qué haces?"
+
+#: src/edit_python_pe/screens/member_form.py:115
+msgid "How do you program in Python?"
+msgstr "¿Cómo se programa en Python?"
+
+#: src/edit_python_pe/screens/member_form.py:120
+msgid "Do you have any contributions to the Python community?"
+msgstr "¿Tiene alguna contribución a la comunidad Python?"
+
+#: src/edit_python_pe/screens/member_form.py:125
+msgid "Are you available for mentoring, consulting, talks?"
+msgstr "¿Estás disponible para mentorías, consultorías, charlas?"
+
+#: src/edit_python_pe/screens/member_form.py:131
+msgid "Save"
+msgstr "Guardar"
+
+#: src/edit_python_pe/screens/member_form.py:232
+msgid "Name is required."
+msgstr "El nombre es obligatorio."
+
+#: src/edit_python_pe/screens/member_form.py:235
+msgid "Email is required."
+msgstr "El correo electrónico es obligatorio."
+
+#: src/edit_python_pe/screens/member_form.py:238
+msgid "Invalid email format."
+msgstr "Formato de correo electrónico no válido."
+
+#: src/edit_python_pe/screens/member_form.py:249
+msgid "Invalid homepage URL format."
+msgstr "Formato de URL de la página principal no válido."
+
+#: src/edit_python_pe/screens/member_form.py:259
+msgid "Both platform and URL must be provided if either is set."
+msgstr "Se debe proporcionar la plataforma y la URL si se establece alguna."
+
+#: src/edit_python_pe/screens/member_form.py:263
+msgid "Invalid URL format for social network."
+msgstr "Formato de URL no válido para la red social."
+
+#: src/edit_python_pe/screens/member_list.py:23
+msgid "Select a member to edit:"
+msgstr "Seleccione un miembro para editar:"
+
+#: src/edit_python_pe/screens/member_list.py:27
+msgid "Edit"
+msgstr "Editar"
+
+#: src/edit_python_pe/screens/quit_confirm.py:13
+msgid "Are you sure you want to close the app?"
+msgstr "¿Estás seguro de que quieres cerrar la aplicación?"
+
+#: src/edit_python_pe/screens/quit_confirm.py:23
+msgid "Close"
+msgstr "Cerrar"
+
+#: src/edit_python_pe/screens/save_loading.py:48
+msgid "Saving changes and creating PR..."
+msgstr "Guardando cambios y creando PR..."
+
+#: src/edit_python_pe/screens/save_loading.py:57
+msgid "Open PR"
+msgstr "Abrir PR"
+
+#: src/edit_python_pe/screens/save_loading.py:58
+msgid "Copy URL"
+msgstr "Copiar URL"
+
+#: src/edit_python_pe/screens/save_loading.py:99
+msgid "An error occurred while saving. Please try again."
+msgstr "Ocurrió un error al guardar. Por favor intente nuevamente."
+
+#: src/edit_python_pe/screens/save_loading.py:169
+msgid "URL copied to clipboard!"
+msgstr "¡URL copiada al portapapeles!"

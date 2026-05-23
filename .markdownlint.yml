@@ -1,0 +1,30 @@
+# Markdownlint configuration for MyST markdown
+default: true
+
+# MD013: Line length - disabled for MyST as it handles wrapping
+MD013: false
+
+# MD033: Inline HTML - allowed for MyST directives and roles
+MD033: false
+
+# MD034: Bare URLs - disabled as MyST handles links differently
+MD034: false
+
+# MD041: First line in file should be a top level heading - disabled
+# as MyST files often have frontmatter first
+MD041: false
+# MD046: Code block style - consistent for all code blocks
+MD046:
+  style: fenced
+# MD024: Multiple headings with the same content - allowed
+MD024:
+  siblings_only: true
+# MD029: Ordered list item prefix
+# Set to 'one' to match mdformat output (all items use '1.')
+MD029:
+  style: one
+# MD040: Fenced code blocks should have a language specified
+MD040: true
+# MD048: Code fence style
+MD048:
+  style: backtick

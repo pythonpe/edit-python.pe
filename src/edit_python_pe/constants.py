@@ -10,3 +10,8 @@ FACEBOOK_OPTION = ("Facebook", "facebook")
 INSTAGRAM_OPTION = ("Instagram", "instagram")
 X_OPTION = ("X", "x")
 YOUTUBE_OPTION = ("YouTube", "youtube")
+
+# Repository Paths
+BLOG_DIR = "blog"
+MEMBERS_DIR = "members"
+AUTHORS_FILE = "AUTHORS"
